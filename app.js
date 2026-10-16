@@ -19,10 +19,16 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// ─── Middleware ───
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
+
+// ─── Utils ───
 import { ApiResponse } from './utils/ApiResponse.js';
+
+// ─── API Routes ───
+import routes from './routes/index.js';
 
 // ─────────────────────────────────────────────────────────────
 // __dirname equivalent for ES modules
@@ -43,12 +49,12 @@ app.set('trust proxy', 1);
 
 // ─────────────────────────────────────────────────────────────
 // Security headers (helmet)
+// CSP is disabled for now so we can load Cloudinary images,
+// Google Fonts, and Unsplash images. We'll turn on a strict CSP
+// in Stage 17 (Security Hardening).
 // ─────────────────────────────────────────────────────────────
 app.use(
   helmet({
-    // Content Security Policy is disabled for now so we can load
-    // Cloudinary images + Google Fonts in later stages.
-    // We'll turn on a strict CSP in Stage 17 (Security Hardening).
     contentSecurityPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
     crossOriginEmbedderPolicy: false,
@@ -61,7 +67,7 @@ app.use(
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5000',
-    credentials: true, // allow cookies (JWT in httpOnly cookies)
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -79,14 +85,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 // ─────────────────────────────────────────────────────────────
-// Response compression (gzip) — faster page loads
+// Response compression (gzip)
 // ─────────────────────────────────────────────────────────────
 app.use(compression());
 
 // ─────────────────────────────────────────────────────────────
 // HTTP request logging
-// - 'dev'       = coloured, concise (development)
-// - 'combined'  = Apache-style (production / Render logs)
 // ─────────────────────────────────────────────────────────────
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -112,7 +116,6 @@ app.use(
 //  - Uptime monitors in production
 // ─────────────────────────────────────────────────────────────
 app.get('/api/health', async (req, res) => {
-  // Dynamic import so this file doesn't need mongoose at boot time.
   const mongoose = (await import('mongoose')).default;
 
   const states = {
@@ -150,36 +153,27 @@ app.get('/api/health', async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────
 // API ROUTES
-// Stage 7+ will mount routes here:
+// Mounted at /api. Rate limiter applied globally here.
 //
-//   import authRoutes from './routes/authRoutes.js';
-//   import productRoutes from './routes/productRoutes.js';
-//   import categoryRoutes from './routes/categoryRoutes.js';
-//   import cartRoutes from './routes/cartRoutes.js';
-//   import wishlistRoutes from './routes/wishlistRoutes.js';
-//   import orderRoutes from './routes/orderRoutes.js';
-//   import paymentRoutes from './routes/paymentRoutes.js';
-//   import reviewRoutes from './routes/reviewRoutes.js';
-//   import sellerRoutes from './routes/sellerRoutes.js';
-//   import adminRoutes from './routes/adminRoutes.js';
-//   import couponRoutes from './routes/couponRoutes.js';
+// Routes currently mounted (Stage 7):
+//   GET  /api/categories
+//   GET  /api/categories/:slug
+//   GET  /api/products
+//   GET  /api/products/homepage
+//   GET  /api/products/:slug
 //
-//   app.use('/api/auth', authLimiter, authRoutes);
-//   app.use('/api/products', productRoutes);
-//   app.use('/api/categories', categoryRoutes);
-//   app.use('/api/cart', cartRoutes);
-//   app.use('/api/wishlist', wishlistRoutes);
-//   app.use('/api/orders', orderRoutes);
-//   app.use('/api/payments', paymentRoutes);
-//   app.use('/api/reviews', reviewRoutes);
-//   app.use('/api/sellers', sellerRoutes);
-//   app.use('/api/admin', adminRoutes);
-//   app.use('/api/coupons', couponRoutes);
-//
-// Or use a single router aggregator (recommended):
-//   import routes from './routes/index.js';
-//   app.use('/api', apiLimiter, routes);
+// Future stages will add:
+//   /api/auth        (Stage 10)
+//   /api/cart        (Stage 11)
+//   /api/wishlist    (Stage 11)
+//   /api/orders      (Stage 12)
+//   /api/payments    (Stage 13)
+//   /api/reviews     (Stage 9)
+//   /api/sellers     (Stage 14)
+//   /api/admin       (Stage 15)
+//   /api/coupons     (Stage 12)
 // ─────────────────────────────────────────────────────────────
+app.use('/api', apiLimiter, routes);
 
 // ─────────────────────────────────────────────────────────────
 // 404 handler — must come AFTER all routes

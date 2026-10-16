@@ -1,0 +1,156 @@
+/**
+ * variables.css
+ * -------------
+ * Design tokens for Kelvin Ikpeni Marketplace.
+ * Change a value here, and every page updates.
+ */
+
+:root {
+  /* ─────────────  BRAND COLOURS  ───────────── */
+  --color-primary: #ff6b00;         /* Main orange */
+  --color-primary-dark: #e05e00;
+  --color-primary-light: #ff8533;
+  --color-primary-soft: #fff4ec;
+
+  --color-accent: #ffc700;          /* Golden yellow */
+  --color-accent-dark: #e0ad00;
+
+  --color-secondary: #0a2540;       /* Deep navy */
+  --color-secondary-light: #1d3d5c;
+
+  /* ─────────────  SEMANTIC COLOURS  ───────────── */
+  --color-success: #10b981;
+  --color-success-soft: #d1fae5;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fee2e2;
+  --color-info: #3b82f6;
+  --color-info-soft: #dbeafe;
+
+  /* ─────────────  NEUTRALS  ───────────── */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* ─────────────  SURFACES  ───────────── */
+  --bg-body: #f5f6f8;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #fafbfc;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ─────────────  TEXT  ───────────── */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-inverse: #ffffff;
+  --text-link: #ff6b00;
+
+  /* ─────────────  BORDERS  ───────────── */
+  --border-color: #e5e7eb;
+  --border-color-dark: #d1d5db;
+  --border-radius-xs: 4px;
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 14px;
+  --border-radius-xl: 20px;
+  --border-radius-full: 999px;
+
+  /* ─────────────  SPACING (4px base)  ───────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ─────────────  TYPOGRAPHY  ───────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-display: 'Poppins', var(--font-sans);
+
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  --text-5xl: 3rem;      /* 48px */
+  --text-6xl: 3.75rem;   /* 60px */
+
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+
+  --line-tight: 1.2;
+  --line-normal: 1.5;
+  --line-relaxed: 1.7;
+
+  /* ─────────────  SHADOWS  ───────────── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0 24px 60px rgba(0, 0, 0, 0.16);
+  --shadow-primary: 0 8px 24px rgba(255, 107, 0, 0.30);
+  --shadow-focus: 0 0 0 3px rgba(255, 107, 0, 0.25);
+
+  /* ─────────────  TRANSITIONS  ───────────── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* ─────────────  Z-INDEX SCALE  ───────────── */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 500;
+  --z-header: 800;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+
+  /* ─────────────  LAYOUT  ───────────── */
+  --container-max: 1280px;
+  --container-padding: 16px;
+  --header-height: 72px;
+  --announcement-height: 36px;
+
+  /* ─────────────  BREAKPOINTS (reference only)  ─────────────
+   *  mobile:  < 640px
+   *  tablet:  640px – 1023px
+   *  desktop: ≥ 1024px
+   *  wide:    ≥ 1280px
+   */
+}
+
+/* Optional dark mode hook (Stage 17) */
+[data-theme='dark'] {
+  --bg-body: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-surface-alt: #273549;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+}

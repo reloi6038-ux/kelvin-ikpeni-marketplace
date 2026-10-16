@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Browse thousands of products on Kelvin Ikpeni Marketplace — Nigeria's premium multi-vendor store." />
+  <title>All Products — Kelvin Ikpeni Marketplace</title>
+
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/listing.css" />
+</head>
+<body>
+
+  <div id="site-header"></div>
+
+  <main class="container">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" id="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current" id="breadcrumb-current">All Products</span>
+    </nav>
+
+    <!-- Listing layout: filters + main -->
+    <div class="listing">
+
+      <!-- Mobile filter toggle -->
+      <button class="listing__filter-toggle" id="open-filters" aria-label="Open filters">
+        ⚙️ Filters & Sort
+      </button>
+
+      <!-- Sidebar filters -->
+      <aside class="listing__sidebar" id="filters-sidebar">
+        <div class="filters__header">
+          <h2 class="filters__title">Filters</h2>
+          <button class="filters__clear" id="clear-filters" hidden>Clear all</button>
+          <button class="filters__close only-mobile" id="close-filters" aria-label="Close filters">✕</button>
+        </div>
+
+        <!-- Category -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Category</h3>
+          <div id="filter-categories" class="filter-group__list"></div>
+        </div>
+
+        <!-- Price -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Price (₦)</h3>
+          <div class="filter-price">
+            <input type="number" id="price-min" placeholder="Min" class="form-input" min="0" />
+            <span>–</span>
+            <input type="number" id="price-max" placeholder="Max" class="form-input" min="0" />
+          </div>
+          <div class="filter-price__presets" id="price-presets"></div>
+        </div>
+
+        <!-- Brand -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Brand</h3>
+          <div id="filter-brands" class="filter-group__list filter-group__list--scroll"></div>
+        </div>
+
+        <!-- Rating -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Minimum Rating</h3>
+          <div id="filter-rating" class="filter-group__list"></div>
+        </div>
+
+        <!-- Availability -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Availability</h3>
+          <label class="form-checkbox">
+            <input type="checkbox" id="filter-instock" />
+            <span>In stock only</span>
+          </label>
+          <label class="form-checkbox">
+            <input type="checkbox" id="filter-onsale" />
+            <span>On sale</span>
+          </label>
+          <label class="form-checkbox">
+            <input type="checkbox" id="filter-flash" />
+            <span>Flash sale</span>
+          </label>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <section class="listing__main">
+        <!-- Toolbar: title, count, sort -->
+        <div class="listing__toolbar">
+          <div class="listing__heading">
+            <h1 class="listing__title" id="listing-title">All Products</h1>
+            <p class="listing__count" id="listing-count">Loading…</p>
+          </div>
+
+          <div class="listing__sort">
+            <label for="sort-select" class="sr-only">Sort by</label>
+            <select id="sort-select" class="form-select">
+              <option value="latest">Newest first</option>
+              <option value="popular">Most popular</option>
+              <option value="rating">Top rated</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="discount">Biggest discount</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Active filter chips -->
+        <div class="listing__chips" id="active-filters" hidden></div>
+
+        <!-- Product grid -->
+        <div class="grid grid-products" id="products-grid">
+          <!-- Skeleton placeholders while loading -->
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="pagination" id="pagination" aria-label="Pagination"></nav>
+      </section>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script type="module" src="/js/pages/listing.js"></script>
+</body>
+</html>
