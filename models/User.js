@@ -4,12 +4,8 @@
  * User model — represents customers, sellers (as users), and admins.
  * Sellers have an additional Seller profile linked 1:1.
  *
- * Security notes:
- *  - Passwords are hashed with bcrypt (12 rounds) before saving.
- *  - The password field has `select: false` — it must be explicitly
- *    requested with `.select('+password')` to be loaded.
- *  - Reset/verification tokens have short expirations.
- *  - `toJSON` strips sensitive fields from API responses.
+ * Mongoose 8 note: document middleware (pre('save')) uses async functions
+ * WITHOUT a next() callback. Using next() throws "next is not a function".
  */
 
 import mongoose from 'mongoose';
@@ -17,7 +13,6 @@ import bcrypt from 'bcryptjs';
 
 // ─────────────────────────────────────────────────────────────
 // Embedded address sub-schema
-// Users can save multiple delivery addresses.
 // ─────────────────────────────────────────────────────────────
 const addressSchema = new mongoose.Schema(
   {
@@ -101,7 +96,6 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       trim: true,
-      // Nigerian mobile: 080..., 090..., 070..., 081... or +234 variants
       match: [
         /^(\+?234|0)[789][01]\d{8}$/,
         'Please provide a valid Nigerian phone number',
@@ -112,8 +106,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters'],
-      // select: false means queries won't return the hash unless
-      // explicitly requested with .select('+password').
       select: false,
     },
 
@@ -136,9 +128,6 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
-    // ─────────────────────────────────────────────────────────
-    // Email verification
-    // ─────────────────────────────────────────────────────────
     emailVerified: {
       type: Boolean,
       default: false,
@@ -152,9 +141,6 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
-    // ─────────────────────────────────────────────────────────
-    // Password reset
-    // ─────────────────────────────────────────────────────────
     passwordResetToken: {
       type: String,
       select: false,
@@ -164,9 +150,6 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
-    // ─────────────────────────────────────────────────────────
-    // Account state
-    // ─────────────────────────────────────────────────────────
     isActive: {
       type: Boolean,
       default: true,
@@ -184,7 +167,6 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
 
-    // Quick-reference wishlist (the full Wishlist model holds richer data)
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -197,18 +179,14 @@ const userSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform(doc, ret) {
-        // Rename _id → id for cleaner frontend API
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
-
-        // Never expose secrets or reset tokens
         delete ret.password;
         delete ret.emailVerificationToken;
         delete ret.emailVerificationExpires;
         delete ret.passwordResetToken;
         delete ret.passwordResetExpires;
-
         return ret;
       },
     },
@@ -232,32 +210,23 @@ const userSchema = new mongoose.Schema(
 // ─────────────────────────────────────────────────────────────
 // Indexes
 // ─────────────────────────────────────────────────────────────
-// Note: email already has a unique index via `unique: true` above.
-// Only additional indexes belong here.
+// Email already has unique index via `unique: true` above.
 userSchema.index({ role: 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ isActive: 1, isSuspended: 1 });
 
 // ─────────────────────────────────────────────────────────────
 // Pre-save: hash password when modified
+// Mongoose 8: async function, NO next() callback.
 // ─────────────────────────────────────────────────────────────
-userSchema.pre('save', async function hashPassword(next) {
-  if (!this.isModified('password')) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err) {
-    next(err);
-  }
+userSchema.pre('save', async function hashPassword() {
+  if (!this.isModified('password')) return;
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // ─────────────────────────────────────────────────────────────
 // Instance method: compare candidate password with stored hash
-// Usage:
-//   const user = await User.findOne({ email }).select('+password');
-//   const ok = await user.comparePassword('candidate');
 // ─────────────────────────────────────────────────────────────
 userSchema.methods.comparePassword = async function comparePassword(candidate) {
   if (!this.password) {
@@ -269,8 +238,6 @@ userSchema.methods.comparePassword = async function comparePassword(candidate) {
 // ─────────────────────────────────────────────────────────────
 // Virtuals
 // ─────────────────────────────────────────────────────────────
-
-// Initials (e.g. "Kelvin Ikpeni" → "KI")
 userSchema.virtual('initials').get(function getInitials() {
   if (!this.name) return '';
   return this.name
@@ -282,25 +249,21 @@ userSchema.virtual('initials').get(function getInitials() {
     .toUpperCase();
 });
 
-// Default address (first with isDefault = true, else first in array)
 userSchema.virtual('defaultAddress').get(function getDefaultAddress() {
   if (!this.addresses || this.addresses.length === 0) return null;
   return this.addresses.find((a) => a.isDefault) || this.addresses[0];
 });
 
-// Is this user an admin?
 userSchema.virtual('isAdmin').get(function isAdmin() {
   return this.role === 'admin';
 });
 
-// Is this user a seller?
 userSchema.virtual('isSeller').get(function isSeller() {
   return this.role === 'seller';
 });
 
 // ─────────────────────────────────────────────────────────────
-// Static helper: safe public fields for select()
-// Usage: User.find().select(User.publicFields)
+// Static helper for public field projection
 // ─────────────────────────────────────────────────────────────
 userSchema.statics.publicFields =
   'name email phone role avatar emailVerified addresses wishlist createdAt';
