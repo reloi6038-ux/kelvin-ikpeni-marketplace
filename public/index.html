@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kelvin Ikpeni Marketplace — Coming Soon</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #ff6b00 0%, #ff9e00 50%, #ffc700 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 560px;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    p { font-size: 1.05rem; line-height: 1.6; opacity: 0.95; margin-bottom: 16px; }
+    .badge {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .actions { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    a.btn {
+      display: inline-block;
+      background: #fff;
+      color: #ff6b00;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    a.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+    a.btn.secondary {
+      background: transparent;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    code {
+      background: rgba(0,0,0,0.25);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">Stage 2 Complete</div>
+    <h1>Kelvin Ikpeni Marketplace</h1>
+    <p>Your Express server is live. The premium storefront, products, cart and dashboards arrive in the next stages.</p>
+    <p>Try the API health endpoint: <code>/api/health</code></p>
+    <div class="actions">
+      <a class="btn" href="/api/health">Open API Health</a>
+      <a class="btn secondary" href="https://nodejs.org" target="_blank">Node.js Docs</a>
+    </div>
+  </div>
+</body>
+</html>
