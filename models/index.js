@@ -1,9 +1,13 @@
 /**
  * models/index.js
  * ---------------
- * Barrel file — import any model from '../models/index.js'
- * instead of one file at a time.
+ * Barrel file — imports every Mongoose model so that registering
+ * the schema with mongoose.model() happens at boot.
+ *
+ * Imported once (from config/db.js) so that populate() calls
+ * anywhere in the app can resolve models by name.
  */
+
 export { default as User } from './User.js';
 export { default as Seller } from './Seller.js';
 export { default as Category } from './Category.js';

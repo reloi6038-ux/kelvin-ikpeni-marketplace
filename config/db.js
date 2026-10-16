@@ -1,16 +1,33 @@
+/**
+ * config/db.js
+ * ------------
+ * Establishes a single connection to MongoDB Atlas.
+ * Also imports all Mongoose models on startup so that any
+ * populate() call anywhere in the app can find them by name.
+ *
+ * Why importing ../models/index.js here matters:
+ *   Without it, controllers that only import e.g. Product and Category
+ *   would throw: "Schema hasn't been registered for model 'Seller'"
+ *   when calling .populate('seller').
+ */
+
 import mongoose from 'mongoose';
 import { logger } from '../utils/logger.js';
+
+// Register every Mongoose model exactly once at boot.
+// This runs as a side effect and populates mongoose.models.
+import '../models/index.js';
 
 /**
  * connectDB
  * ---------
- * Establishes a single connection to MongoDB Atlas.
- * Call this once at server startup.
+ * Connects to MongoDB Atlas. Call this once at server startup.
  *
- * Why options matter:
+ * Options used:
  *  - serverSelectionTimeoutMS: fail fast if Atlas is unreachable
- *  - socketTimeoutMS: kill idle sockets after 45s to free resources on M0
+ *  - socketTimeoutMS: close idle sockets after 45s (frees M0 resources)
  *  - maxPoolSize: M0 free tier caps connections; keep the pool small
+ *  - autoIndex: only build indexes outside production
  */
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
@@ -20,7 +37,7 @@ const connectDB = async () => {
     throw new Error('MONGODB_URI missing');
   }
 
-  // Prevent double-connections during nodemon hot-reload
+  // Prevent double-connect during nodemon hot reload
   if (mongoose.connection.readyState === 1) {
     logger.info('MongoDB already connected');
     return mongoose.connection;
@@ -34,7 +51,7 @@ const connectDB = async () => {
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
       minPoolSize: 2,
-      autoIndex: process.env.NODE_ENV !== 'production', // don't build indexes on every boot in prod
+      autoIndex: process.env.NODE_ENV !== 'production',
     });
 
     logger.success(`MongoDB connected: ${conn.connection.host}`);
