@@ -150,14 +150,36 @@ app.get('/api/health', async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────
 // API ROUTES
-// Each stage will add a line here. Example for later:
+// Stage 7+ will mount routes here:
+//
 //   import authRoutes from './routes/authRoutes.js';
+//   import productRoutes from './routes/productRoutes.js';
+//   import categoryRoutes from './routes/categoryRoutes.js';
+//   import cartRoutes from './routes/cartRoutes.js';
+//   import wishlistRoutes from './routes/wishlistRoutes.js';
+//   import orderRoutes from './routes/orderRoutes.js';
+//   import paymentRoutes from './routes/paymentRoutes.js';
+//   import reviewRoutes from './routes/reviewRoutes.js';
+//   import sellerRoutes from './routes/sellerRoutes.js';
+//   import adminRoutes from './routes/adminRoutes.js';
+//   import couponRoutes from './routes/couponRoutes.js';
+//
 //   app.use('/api/auth', authLimiter, authRoutes);
+//   app.use('/api/products', productRoutes);
+//   app.use('/api/categories', categoryRoutes);
+//   app.use('/api/cart', cartRoutes);
+//   app.use('/api/wishlist', wishlistRoutes);
+//   app.use('/api/orders', orderRoutes);
+//   app.use('/api/payments', paymentRoutes);
+//   app.use('/api/reviews', reviewRoutes);
+//   app.use('/api/sellers', sellerRoutes);
+//   app.use('/api/admin', adminRoutes);
+//   app.use('/api/coupons', couponRoutes);
+//
+// Or use a single router aggregator (recommended):
+//   import routes from './routes/index.js';
+//   app.use('/api', apiLimiter, routes);
 // ─────────────────────────────────────────────────────────────
-
-// Stage 5+ will mount routes here:
-// import routes from './routes/index.js';
-// app.use('/api', apiLimiter, routes);
 
 // ─────────────────────────────────────────────────────────────
 // 404 handler — must come AFTER all routes
