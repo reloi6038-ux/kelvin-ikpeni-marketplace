@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container" style="padding: var(--space-8) 0; min-height: 60vh;">
+    <div class="breadcrumbs">
+      <a href="/">Home</a> <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current">Contact Us</span>
+    </div>
+
+    <div style="max-width: 900px; margin: 0 auto; background: var(--bg-surface); padding: var(--space-8); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color);">
+      <h1 style="margin-bottom: var(--space-6); font-size: var(--text-3xl);">Contact Us</h1>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8);">
+        <div>
+          <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-3);">Get in Touch</h2>
+          <p class="text-secondary" style="margin-bottom: var(--space-4);">Our customer support team is available 24/7 to assist you.</p>
+          <ul style="color: var(--text-secondary); display: flex; flex-direction: column; gap: var(--space-3); list-style: none; padding: 0;">
+            <li>📧 Email: <a href="mailto:support@kelvinikpeni.com">support@kelvinikpeni.com</a></li>
+            <li>📞 Phone: +234 800 123 4567</li>
+            <li>📍 Address: 15 Adeola Odeku St, Victoria Island, Lagos, Nigeria</li>
+          </ul>
+        </div>
+        <form onsubmit="event.preventDefault(); alert('Your message has been sent! We will reply within 24 hours.'); this.reset();">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" placeholder="Kelvin Ikpeni" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Email</label>
+            <input type="email" class="form-input" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">How can we help?</label>
+            <textarea class="form-textarea" placeholder="Your message..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountHeader } from '/js/components/header.js';
+    import { mountFooter } from '/js/components/footer.js';
+    mountHeader();
+    mountFooter();
+  </script>
+</body>
+</html>

@@ -30,19 +30,45 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Trust proxy for Render.com
+// Trust proxy for Render.com (makes req.ip, req.protocol accurate)
 app.set('trust proxy', 1);
 
-// Security headers
+// ─────────────────────────────────────────────────────────────
+// CROSS-ORIGIN RESOURCE POLICY
+// Must be applied before helmet so images load cross-origin.
+// ─────────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+});
+
+// ─────────────────────────────────────────────────────────────
+// SECURITY HEADERS (Helmet + CSP)
+// We now allow `https:` for images globally — necessary for
+// Unsplash images and any external CDN.
+// ─────────────────────────────────────────────────────────────
 app.use(
   helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        // Allow all HTTPS images (Unsplash, Cloudinary, etc.)
+        imgSrc: ["'self'", "data:", "https:", "http:"],
+        connectSrc: ["'self'", "https://api.paystack.co"],
+        frameSrc: ["'self'", "https://checkout.paystack.com"],
+      },
+    },
     crossOriginResourcePolicy: { policy: 'cross-origin' },
     crossOriginEmbedderPolicy: false,
   })
 );
 
+// ─────────────────────────────────────────────────────────────
 // CORS
+// ─────────────────────────────────────────────────────────────
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5000',
@@ -54,8 +80,7 @@ app.use(
 
 // ─────────────────────────────────────────────────────────────
 // PAYSTACK WEBHOOK RAW BODY FIX
-// Paystack requires the raw request body to verify signatures.
-// This MUST be registered BEFORE the global express.json() parser.
+// Must be registered BEFORE express.json()
 // ─────────────────────────────────────────────────────────────
 app.use(
   '/api/payments/webhook',
@@ -66,7 +91,9 @@ app.use(
   })
 );
 
-// Body parsers (for all other routes)
+// ─────────────────────────────────────────────────────────────
+// BODY PARSERS & UTILITIES
+// ─────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
@@ -87,7 +114,9 @@ app.use(
   })
 );
 
-// Health check
+// ─────────────────────────────────────────────────────────────
+// HEALTH CHECK
+// ─────────────────────────────────────────────────────────────
 app.get('/api/health', async (req, res) => {
   const mongoose = (await import('mongoose')).default;
 
@@ -126,14 +155,25 @@ app.get('/api/health', async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────
 // API ROUTES
-// Mounted at /api. Rate limiter applied globally here.
 // ─────────────────────────────────────────────────────────────
 app.use('/api', apiLimiter, routes);
 
-// 404 handler
-app.use(notFound);
+// ─────────────────────────────────────────────────────────────
+// 404 HANDLERS
+// ─────────────────────────────────────────────────────────────
+app.use('/api', notFound);
 
-// Global error handler
+app.use((req, res, next) => {
+  if (req.accepts('html')) {
+    res.status(404).sendFile(path.join(__dirname, 'public/pages/404.html'));
+  } else {
+    next(notFound(req, res, next));
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// GLOBAL ERROR HANDLER
+// ─────────────────────────────────────────────────────────────
 app.use(errorHandler);
 
 export default app;

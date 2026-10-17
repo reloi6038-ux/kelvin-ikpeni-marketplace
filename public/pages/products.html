@@ -3,142 +3,172 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Browse thousands of products on Kelvin Ikpeni Marketplace — Nigeria's premium multi-vendor store." />
-  <title>All Products — Kelvin Ikpeni Marketplace</title>
+  <title>Product — Kelvin Ikpeni Marketplace</title>
 
   <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="/css/variables.css" />
-  <link rel="stylesheet" href="/css/base.css" />
-  <link rel="stylesheet" href="/css/components.css" />
-  <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/pages.css" />
-  <link rel="stylesheet" href="/css/listing.css" />
+  <!-- Added ?v=3 to force browser cache refresh -->
+  <link rel="stylesheet" href="/css/variables.css?v=3" />
+  <link rel="stylesheet" href="/css/base.css?v=3" />
+  <link rel="stylesheet" href="/css/components.css?v=3" />
+  <link rel="stylesheet" href="/css/layout.css?v=3" />
+  <link rel="stylesheet" href="/css/pages.css?v=3" />
+  <link rel="stylesheet" href="/css/product.css?v=3" />
 </head>
 <body>
 
   <div id="site-header"></div>
 
-  <main class="container">
+  <main class="container" id="product-root">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs" id="breadcrumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span class="breadcrumbs__separator">›</span>
-      <span class="breadcrumbs__current" id="breadcrumb-current">All Products</span>
+      <span id="breadcrumb-cat">Product</span>
+      <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current" id="breadcrumb-current">Loading…</span>
     </nav>
 
-    <!-- Listing layout: filters + main -->
-    <div class="listing">
+    <!-- Loading skeleton -->
+    <div id="product-skeleton" class="pdp-skeleton">
+      <div class="pdp-skeleton__gallery skeleton"></div>
+      <div class="pdp-skeleton__info">
+        <div class="skeleton skeleton-text" style="width:60%;height:24px;"></div>
+        <div class="skeleton skeleton-text" style="width:30%;"></div>
+        <div class="skeleton skeleton-text" style="width:40%;"></div>
+        <div class="skeleton skeleton-text" style="width:80%;height:32px;"></div>
+        <div class="skeleton skeleton-text" style="width:100%;height:60px;"></div>
+      </div>
+    </div>
 
-      <!-- Mobile filter toggle -->
-      <button class="listing__filter-toggle" id="open-filters" aria-label="Open filters">
-        ⚙️ Filters & Sort
-      </button>
+    <!-- Product content -->
+    <div id="product-content" class="pdp" hidden>
+      
+      <!-- LEFT: Single main image (Hardcoded for reliability) -->
+      <section class="pdp__gallery" aria-label="Product images">
+        <div style="width: 100%; height: 450px; background: #fff; border: 1px solid #eee; border-radius: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+          <img id="gallery-main" src="/images/placeholders/product.svg" alt="Product Image" style="width: 100%; height: 100%; object-fit: contain; padding: 24px;" />
+        </div>
+      </section>
 
-      <!-- Sidebar filters -->
-      <aside class="listing__sidebar" id="filters-sidebar">
-        <div class="filters__header">
-          <h2 class="filters__title">Filters</h2>
-          <button class="filters__clear" id="clear-filters" hidden>Clear all</button>
-          <button class="filters__close only-mobile" id="close-filters" aria-label="Close filters">✕</button>
+      <!-- RIGHT: Info -->
+      <section class="pdp__info" aria-label="Product details">
+        <span class="pdp__brand" id="pdp-brand"></span>
+        <h1 class="pdp__title" id="pdp-title"></h1>
+
+        <div class="pdp__meta">
+          <div class="pdp__rating" id="pdp-rating"></div>
+          <span class="pdp__meta-sep">•</span>
+          <span class="pdp__sold" id="pdp-sold"></span>
+          <span class="pdp__meta-sep">•</span>
+          <span class="pdp__sku">SKU: <span id="pdp-sku"></span></span>
         </div>
 
-        <!-- Category -->
-        <div class="filter-group">
-          <h3 class="filter-group__title">Category</h3>
-          <div id="filter-categories" class="filter-group__list"></div>
-        </div>
-
-        <!-- Price -->
-        <div class="filter-group">
-          <h3 class="filter-group__title">Price (₦)</h3>
-          <div class="filter-price">
-            <input type="number" id="price-min" placeholder="Min" class="form-input" min="0" />
-            <span>–</span>
-            <input type="number" id="price-max" placeholder="Max" class="form-input" min="0" />
+        <div class="pdp__price-block" id="pdp-price-block">
+          <div class="pdp__price-row">
+            <span class="pdp__price" id="pdp-price"></span>
+            <span class="pdp__previous" id="pdp-previous"></span>
+            <span class="badge badge-discount" id="pdp-discount" hidden></span>
           </div>
-          <div class="filter-price__presets" id="price-presets"></div>
+          <p class="pdp__savings" id="pdp-savings" hidden></p>
+          <p class="pdp__stock" id="pdp-stock"></p>
         </div>
 
-        <!-- Brand -->
-        <div class="filter-group">
-          <h3 class="filter-group__title">Brand</h3>
-          <div id="filter-brands" class="filter-group__list filter-group__list--scroll"></div>
-        </div>
+        <p class="pdp__short" id="pdp-short"></p>
 
-        <!-- Rating -->
-        <div class="filter-group">
-          <h3 class="filter-group__title">Minimum Rating</h3>
-          <div id="filter-rating" class="filter-group__list"></div>
-        </div>
-
-        <!-- Availability -->
-        <div class="filter-group">
-          <h3 class="filter-group__title">Availability</h3>
-          <label class="form-checkbox">
-            <input type="checkbox" id="filter-instock" />
-            <span>In stock only</span>
-          </label>
-          <label class="form-checkbox">
-            <input type="checkbox" id="filter-onsale" />
-            <span>On sale</span>
-          </label>
-          <label class="form-checkbox">
-            <input type="checkbox" id="filter-flash" />
-            <span>Flash sale</span>
-          </label>
-        </div>
-      </aside>
-
-      <!-- Main content -->
-      <section class="listing__main">
-        <!-- Toolbar: title, count, sort -->
-        <div class="listing__toolbar">
-          <div class="listing__heading">
-            <h1 class="listing__title" id="listing-title">All Products</h1>
-            <p class="listing__count" id="listing-count">Loading…</p>
+        <div class="pdp__actions">
+          <div class="pdp__qty">
+            <label class="sr-only" for="pdp-qty">Quantity</label>
+            <button type="button" class="pdp__qty-btn" data-qty="-1" aria-label="Decrease quantity">−</button>
+            <input type="number" id="pdp-qty" value="1" min="1" max="99" />
+            <button type="button" class="pdp__qty-btn" data-qty="+1" aria-label="Increase quantity">+</button>
           </div>
+          <button class="btn btn-primary btn-lg pdp__add" id="pdp-add">
+            🛒 Add to Cart
+          </button>
+          <button class="btn btn-accent btn-lg pdp__buy" id="pdp-buy">
+            ⚡ Buy Now
+          </button>
+          <button class="pdp__icon-btn" id="pdp-wishlist" aria-label="Add to wishlist">♡</button>
+          <button class="pdp__icon-btn" id="pdp-share" aria-label="Share">🔗</button>
+        </div>
 
-          <div class="listing__sort">
-            <label for="sort-select" class="sr-only">Sort by</label>
-            <select id="sort-select" class="form-select">
-              <option value="latest">Newest first</option>
-              <option value="popular">Most popular</option>
-              <option value="rating">Top rated</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-              <option value="discount">Biggest discount</option>
-            </select>
+        <!-- Seller card -->
+        <div class="pdp__seller" id="pdp-seller">
+          <div class="pdp-seller__left">
+            <div class="pdp-seller__badge">🏪</div>
+            <div>
+              <p class="pdp-seller__label">Sold by</p>
+              <a class="pdp-seller__name" id="pdp-seller-name" href="#">Seller</a>
+            </div>
+          </div>
+          <a class="btn btn-outline btn-sm" id="pdp-seller-link" href="#">Visit Store</a>
+        </div>
+
+        <!-- Delivery info -->
+        <div class="pdp__delivery">
+          <div class="pdp-delivery-item">
+            <span class="pdp-delivery-icon">🚚</span>
+            <div>
+              <strong>Fast delivery</strong>
+              <p id="pdp-delivery-text">2–5 business days nationwide</p>
+            </div>
+          </div>
+          <div class="pdp-delivery-item">
+            <span class="pdp-delivery-icon">↩️</span>
+            <div>
+              <strong>7-day returns</strong>
+              <p>Easy returns if not satisfied</p>
+            </div>
+          </div>
+          <div class="pdp-delivery-item">
+            <span class="pdp-delivery-icon">🔒</span>
+            <div>
+              <strong>Secure payment</strong>
+              <p>Powered by Paystack</p>
+            </div>
           </div>
         </div>
-
-        <!-- Active filter chips -->
-        <div class="listing__chips" id="active-filters" hidden></div>
-
-        <!-- Product grid -->
-        <div class="grid grid-products" id="products-grid">
-          <!-- Skeleton placeholders while loading -->
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-          <div class="skeleton skeleton-image" style="aspect-ratio:3/4;"></div>
-        </div>
-
-        <!-- Pagination -->
-        <nav class="pagination" id="pagination" aria-label="Pagination"></nav>
       </section>
     </div>
+
+    <!-- Tabs -->
+    <section class="pdp-tabs" id="pdp-tabs" hidden>
+      <div class="pdp-tabs__nav" role="tablist">
+        <button class="pdp-tabs__btn is-active" data-tab="description" role="tab">Description</button>
+        <button class="pdp-tabs__btn" data-tab="specs" role="tab">Specifications</button>
+        <button class="pdp-tabs__btn" data-tab="reviews" role="tab">Reviews (<span id="tab-review-count">0</span>)</button>
+      </div>
+
+      <div class="pdp-tabs__panels">
+        <div class="pdp-tabs__panel is-active" data-panel="description" role="tabpanel">
+          <p id="tab-description"></p>
+        </div>
+        <div class="pdp-tabs__panel" data-panel="specs" role="tabpanel">
+          <table class="pdp-specs">
+            <tbody id="tab-specs-body"></tbody>
+          </table>
+        </div>
+        <div class="pdp-tabs__panel" data-panel="reviews" role="tabpanel">
+          <div class="reviews" id="reviews-root"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related products -->
+    <section class="page-section" id="related-section" hidden>
+      <div class="section-heading">
+        <h2 class="section-heading__title">You may also like</h2>
+      </div>
+      <div class="grid grid-products" id="related-products"></div>
+    </section>
   </main>
 
   <div id="site-footer"></div>
 
-  <script type="module" src="/js/pages/listing.js"></script>
+  <script type="module" src="/js/pages/product.js?v=3"></script>
 </body>
 </html>

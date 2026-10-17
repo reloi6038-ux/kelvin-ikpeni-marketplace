@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container" style="padding: var(--space-8) 0; min-height: 60vh;">
+    <div class="breadcrumbs">
+      <a href="/">Home</a> <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current">Privacy Policy</span>
+    </div>
+
+    <div style="max-width: 800px; margin: 0 auto; background: var(--bg-surface); padding: var(--space-8); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color);">
+      <h1 style="margin-bottom: var(--space-6); font-size: var(--text-3xl);">Privacy Policy</h1>
+      
+      <p class="text-secondary" style="margin-bottom: var(--space-4);">Your privacy is important to us. This policy explains how we collect, use, and protect your personal information.</p>
+      
+      <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2); margin-top: var(--space-5);">Information We Collect</h3>
+      <p class="text-secondary" style="margin-bottom: var(--space-4);">We collect information you provide directly to us, such as your name, email address, delivery address, and phone number when you create an account or place an order.</p>
+      
+      <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2); margin-top: var(--space-5);">How We Use It</h3>
+      <p class="text-secondary">We use your information to process orders, communicate with you, and improve our services. We do not sell your personal data to third parties.</p>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountHeader } from '/js/components/header.js';
+    import { mountFooter } from '/js/components/footer.js';
+    mountHeader();
+    mountFooter();
+  </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help Centre — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container" style="padding: var(--space-8) 0; min-height: 60vh;">
+    <div class="breadcrumbs">
+      <a href="/">Home</a> <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current">Help Centre</span>
+    </div>
+
+    <div style="max-width: 800px; margin: 0 auto; background: var(--bg-surface); padding: var(--space-8); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color);">
+      <h1 style="margin-bottom: var(--space-6); font-size: var(--text-3xl);">Help Centre</h1>
+      
+      <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-3);">Frequently Asked Questions</h2>
+      
+      <div style="margin-bottom: var(--space-4);">
+        <strong>How do I place an order?</strong>
+        <p class="text-secondary">Browse our products, add items to your cart, and proceed to checkout. You can pay securely via Paystack.</p>
+      </div>
+      
+      <div style="margin-bottom: var(--space-4);">
+        <strong>How can I track my order?</strong>
+        <p class="text-secondary">Once your order ships, you will receive a tracking number. You can also view your order status in your Account dashboard.</p>
+      </div>
+      
+      <div style="margin-bottom: var(--space-4);">
+        <strong>What payment methods do you accept?</strong>
+        <p class="text-secondary">We accept Card payments, Bank Transfers, and USSD via Paystack.</p>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountHeader } from '/js/components/header.js';
+    import { mountFooter } from '/js/components/footer.js';
+    mountHeader();
+    mountFooter();
+  </script>
+</body>
+</html>

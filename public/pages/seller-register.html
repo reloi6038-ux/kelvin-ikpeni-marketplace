@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Become a Seller — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container" style="padding: var(--space-8) 0; min-height: 70vh;">
+    <div class="auth-page" style="padding: 0;">
+      
+      <!-- Left Side: Benefits -->
+      <aside class="auth-page__aside">
+        <h2>Start Selling Today 🚀</h2>
+        <p>Join Nigeria's fastest-growing marketplace and reach millions of customers.</p>
+        <div class="auth-page__features">
+          <div class="auth-feature"><span class="auth-feature__icon">💰</span> Low commission rates</div>
+          <div class="auth-feature"><span class="auth-feature__icon">🚚</span> Nationwide delivery</div>
+          <div class="auth-feature"><span class="auth-feature__icon">🔒</span> Secure Paystack payouts</div>
+          <div class="auth-feature"><span class="auth-feature__icon">📊</span> Powerful seller dashboard</div>
+        </div>
+      </aside>
+
+      <!-- Right Side: Registration Form -->
+      <div class="auth-page__form-wrap" style="max-width: 600px;">
+        <div class="auth-form__header">
+          <h1 class="auth-form__title">Become a Seller</h1>
+          <p class="auth-form__subtitle">Fill in your details to apply for a seller account</p>
+        </div>
+
+        <div class="auth-form__error" id="reg-error"></div>
+
+        <form id="seller-form">
+          <h3 style="font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: var(--space-3); margin-top: var(--space-4);">Personal Details</h3>
+          
+          <div class="form-group">
+            <label class="form-label" for="se-name">Full Name <span class="required">*</span></label>
+            <input type="text" id="se-name" class="form-input" required placeholder="Your full name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="se-email">Email <span class="required">*</span></label>
+            <input type="email" id="se-email" class="form-input" required placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="se-phone">Phone Number <span class="required">*</span></label>
+            <input type="tel" id="se-phone" class="form-input" required placeholder="08012345678" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="se-password">Password <span class="required">*</span></label>
+            <input type="password" id="se-password" class="form-input" required minlength="8" placeholder="At least 8 characters" />
+          </div>
+
+          <h3 style="font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: var(--space-3); margin-top: var(--space-6);">Store Details</h3>
+
+          <div class="form-group">
+            <label class="form-label" for="se-store">Store Name <span class="required">*</span></label>
+            <input type="text" id="se-store" class="form-input" required placeholder="e.g. TechHub Lagos" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="se-desc">Store Description</label>
+            <textarea id="se-desc" class="form-textarea" placeholder="Tell customers what you sell..." rows="3"></textarea>
+          </div>
+
+          <label class="form-checkbox" style="margin-top: var(--space-5); margin-bottom: var(--space-4);">
+            <input type="checkbox" id="se-terms" required />
+            <span>I agree to the <a href="/pages/seller-terms.html" target="_blank">Seller Terms & Policies</a></span>
+          </label>
+
+          <button type="submit" class="btn btn-primary auth-form__submit" id="se-btn">
+            Submit Application
+          </button>
+        </form>
+
+        <div class="auth-form__footer">
+          Already have a store? <a href="/pages/login.html">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  
+  <script type="module">
+    import { mountHeader } from '/js/components/header.js';
+    import { mountFooter } from '/js/components/footer.js';
+    import { toast } from '/js/components/toast.js';
+    import { api } from '/js/api.js';
+    import { auth } from '/js/auth.js';
+
+    const init = () => {
+      mountHeader();
+      mountFooter();
+
+      const form = document.getElementById('seller-form');
+      const btn = document.getElementById('se-btn');
+      const errBox = document.getElementById('reg-error');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errBox.classList.remove('is-visible');
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+
+        const name = document.getElementById('se-name').value.trim();
+        const email = document.getElementById('se-email').value.trim();
+        const phone = document.getElementById('se-phone').value.trim();
+        const password = document.getElementById('se-password').value;
+        const storeName = document.getElementById('se-store').value.trim();
+        const description = document.getElementById('se-desc').value.trim();
+
+        try {
+          // 1. Register user account (if not already logged in)
+          if (!auth.isLoggedIn()) {
+            await api.post('/auth/register', { name, email, phone, password });
+            // Log them in immediately
+            await auth.login(email, password);
+          }
+
+          // 2. Submit seller application
+          await api.post('/sellers/register', { 
+            storeName, 
+            description, 
+            businessEmail: email, 
+            businessPhone: phone 
+          });
+
+          toast('Seller application submitted! Pending admin approval.', 'success', 'Success');
+          
+          setTimeout(() => {
+            window.location.href = '/pages/seller-dashboard.html';
+          }, 1500);
+
+        } catch (err) {
+          errBox.textContent = err.message;
+          errBox.classList.add('is-visible');
+          btn.disabled = false;
+          btn.textContent = 'Submit Application';
+        }
+      });
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

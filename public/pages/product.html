@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Product details on Kelvin Ikpeni Marketplace" />
   <title>Product — Kelvin Ikpeni Marketplace</title>
 
   <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
@@ -11,20 +10,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="/css/variables.css" />
-  <link rel="stylesheet" href="/css/base.css" />
-  <link rel="stylesheet" href="/css/components.css" />
-  <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/pages.css" />
-  <link rel="stylesheet" href="/css/product.css" />
+  <link rel="stylesheet" href="/css/variables.css?v=7" />
+  <link rel="stylesheet" href="/css/base.css?v=7" />
+  <link rel="stylesheet" href="/css/components.css?v=7" />
+  <link rel="stylesheet" href="/css/layout.css?v=7" />
+  <link rel="stylesheet" href="/css/pages.css?v=7" />
+  <link rel="stylesheet" href="/css/product.css?v=7" />
 </head>
 <body>
 
   <div id="site-header"></div>
 
-  <main class="container" id="product-root">
-    <!-- Breadcrumbs -->
-    <nav class="breadcrumbs" id="breadcrumbs" aria-label="Breadcrumb">
+  <main class="container" style="padding: var(--space-6) 0; max-width: 1100px; margin: 0 auto;">
+
+    <nav class="breadcrumbs" style="margin-bottom: var(--space-4);">
       <a href="/">Home</a>
       <span class="breadcrumbs__separator">›</span>
       <span id="breadcrumb-cat">Product</span>
@@ -32,155 +31,118 @@
       <span class="breadcrumbs__current" id="breadcrumb-current">Loading…</span>
     </nav>
 
-    <!-- Loading skeleton -->
-    <div id="product-skeleton" class="pdp-skeleton">
-      <div class="pdp-skeleton__gallery skeleton"></div>
-      <div class="pdp-skeleton__info">
-        <div class="skeleton skeleton-text" style="width:60%;height:24px;"></div>
-        <div class="skeleton skeleton-text" style="width:30%;"></div>
-        <div class="skeleton skeleton-text" style="width:40%;"></div>
-        <div class="skeleton skeleton-text" style="width:80%;height:32px;"></div>
-        <div class="skeleton skeleton-text" style="width:100%;height:60px;"></div>
-      </div>
+    <div id="product-skeleton" class="card" style="padding: var(--space-8);">
+      <div class="skeleton skeleton-text" style="width:40%;height:16px;margin-bottom:16px;"></div>
+      <div class="skeleton skeleton-text" style="width:70%;height:32px;margin-bottom:16px;"></div>
+      <div class="skeleton skeleton-text" style="width:30%;margin-bottom:24px;"></div>
+      <div class="skeleton skeleton-text" style="width:50%;height:48px;margin-bottom:24px;"></div>
     </div>
 
-    <!-- Product content -->
-    <div id="product-content" class="pdp" hidden>
-      <!-- LEFT: Image gallery -->
-      <section class="pdp__gallery" aria-label="Product images">
-        <div class="pdp-gallery">
-          <div class="pdp-gallery__thumbs" id="gallery-thumbs"></div>
-          <div class="pdp-gallery__main">
-            <img id="gallery-main" src="" alt="" />
-            <button class="pdp-gallery__nav pdp-gallery__nav--prev" id="gallery-prev" aria-label="Previous image">‹</button>
-            <button class="pdp-gallery__nav pdp-gallery__nav--next" id="gallery-next" aria-label="Next image">›</button>
+    <article id="product-content" hidden>
+      <div class="pdp-layout">
+
+        <!-- LEFT: Image -->
+        <div class="pdp-image-wrap">
+          <!-- PLACEHOLDER shown until JS overrides with real image -->
+          <img id="pdp-image" src="/images/placeholders/product.svg" alt="Product Image" />
+        </div>
+
+        <!-- RIGHT: Info -->
+        <div class="pdp-info-wrap">
+          <span id="pdp-brand" style="display:inline-block; font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-primary); margin-bottom: var(--space-2);"></span>
+          <h1 id="pdp-title" style="font-size: var(--text-3xl); font-weight: var(--font-bold); line-height: 1.2; margin-bottom: var(--space-4);"></h1>
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-5);">
+            <div id="pdp-rating" style="display: inline-flex; align-items: center; gap: var(--space-2);"></div>
+            <span>•</span>
+            <span id="pdp-sold"></span>
+            <span>•</span>
+            <span>SKU: <span id="pdp-sku" style="color: var(--text-primary); font-weight: var(--font-medium);"></span></span>
           </div>
-        </div>
-      </section>
 
-      <!-- RIGHT: Info -->
-      <section class="pdp__info" aria-label="Product details">
-        <span class="pdp__brand" id="pdp-brand"></span>
-        <h1 class="pdp__title" id="pdp-title"></h1>
-
-        <div class="pdp__meta">
-          <div class="pdp__rating" id="pdp-rating"></div>
-          <span class="pdp__meta-sep">•</span>
-          <span class="pdp__sold" id="pdp-sold"></span>
-          <span class="pdp__meta-sep">•</span>
-          <span class="pdp__sku">SKU: <span id="pdp-sku"></span></span>
-        </div>
-
-        <div class="pdp__price-block" id="pdp-price-block">
-          <div class="pdp__price-row">
-            <span class="pdp__price" id="pdp-price"></span>
-            <span class="pdp__previous" id="pdp-previous"></span>
-            <span class="badge badge-discount" id="pdp-discount" hidden></span>
-          </div>
-          <p class="pdp__savings" id="pdp-savings" hidden></p>
-          <p class="pdp__stock" id="pdp-stock"></p>
-        </div>
-
-        <p class="pdp__short" id="pdp-short"></p>
-
-        <div class="pdp__actions">
-          <div class="pdp__qty">
-            <label class="sr-only" for="pdp-qty">Quantity</label>
-            <button type="button" class="pdp__qty-btn" data-qty="-1" aria-label="Decrease quantity">−</button>
-            <input type="number" id="pdp-qty" value="1" min="1" max="99" />
-            <button type="button" class="pdp__qty-btn" data-qty="+1" aria-label="Increase quantity">+</button>
-          </div>
-          <button class="btn btn-primary btn-lg pdp__add" id="pdp-add">
-            🛒 Add to Cart
-          </button>
-          <button class="btn btn-accent btn-lg pdp__buy" id="pdp-buy">
-            ⚡ Buy Now
-          </button>
-          <button class="pdp__icon-btn" id="pdp-wishlist" aria-label="Add to wishlist">♡</button>
-          <button class="pdp__icon-btn" id="pdp-share" aria-label="Share">🔗</button>
-        </div>
-
-        <!-- Seller card -->
-        <div class="pdp__seller" id="pdp-seller">
-          <div class="pdp-seller__left">
-            <div class="pdp-seller__badge">🏪</div>
-            <div>
-              <p class="pdp-seller__label">Sold by</p>
-              <a class="pdp-seller__name" id="pdp-seller-name" href="#">Seller</a>
+          <div id="pdp-price-block" style="background: var(--color-primary-soft); border-radius: var(--border-radius-md); padding: var(--space-5); margin-bottom: var(--space-5);">
+            <div style="display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-2);">
+              <span id="pdp-price" style="font-size: var(--text-3xl); font-weight: var(--font-extrabold); color: var(--color-primary); line-height: 1;"></span>
+              <span id="pdp-previous" style="font-size: var(--text-base); color: var(--text-muted); text-decoration: line-through;"></span>
+              <span id="pdp-discount" class="badge badge-discount" hidden></span>
             </div>
+            <p id="pdp-savings" style="font-size: var(--text-sm); color: var(--color-success); font-weight: var(--font-semibold); margin: 0 0 var(--space-2);" hidden></p>
+            <p id="pdp-stock" style="font-size: var(--text-sm); font-weight: var(--font-medium); margin: 0;"></p>
           </div>
-          <a class="btn btn-outline btn-sm" id="pdp-seller-link" href="#">Visit Store</a>
-        </div>
 
-        <!-- Delivery info -->
-        <div class="pdp__delivery">
-          <div class="pdp-delivery-item">
-            <span class="pdp-delivery-icon">🚚</span>
-            <div>
-              <strong>Fast delivery</strong>
-              <p id="pdp-delivery-text">2–5 business days nationwide</p>
+          <p id="pdp-short" style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--space-5);"></p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-5);">
+            <div style="display: inline-flex; align-items: center; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); overflow: hidden; height: 48px;">
+              <button type="button" class="pdp__qty-btn" data-qty="-1" aria-label="Decrease" style="width: 40px; height: 100%; font-size: 1.1rem; background: none; border: none; cursor: pointer;">−</button>
+              <input type="number" id="pdp-qty" value="1" min="1" max="99" style="width: 50px; height: 100%; border: none; text-align: center; font-weight: 600; background: transparent; outline: none;" />
+              <button type="button" class="pdp__qty-btn" data-qty="+1" aria-label="Increase" style="width: 40px; height: 100%; font-size: 1.1rem; background: none; border: none; cursor: pointer;">+</button>
             </div>
+            <button id="pdp-add" class="btn btn-primary btn-lg" style="flex: 1; min-width: 160px;">🛒 Add to Cart</button>
+            <button id="pdp-buy" class="btn btn-accent btn-lg" style="flex: 1; min-width: 140px;">⚡ Buy Now</button>
+            <button id="pdp-wishlist" class="pdp__icon-btn" aria-label="Wishlist" style="width: 48px; height: 48px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); background: none; font-size: 1.2rem; cursor: pointer;">♡</button>
           </div>
-          <div class="pdp-delivery-item">
-            <span class="pdp-delivery-icon">↩️</span>
-            <div>
-              <strong>7-day returns</strong>
-              <p>Easy returns if not satisfied</p>
+
+          <div id="pdp-seller" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4); background: var(--bg-surface-alt); border-radius: var(--border-radius-md); margin-bottom: var(--space-4); flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <div style="width: 44px; height: 44px; border-radius: var(--border-radius-md); background: var(--color-primary-soft); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">🏪</div>
+              <div>
+                <p style="font-size: var(--text-xs); color: var(--text-muted); margin: 0;">Sold by</p>
+                <a id="pdp-seller-name" href="#" style="font-weight: 600; font-size: var(--text-sm); color: var(--text-primary); text-decoration: none;">Seller</a>
+              </div>
             </div>
+            <a id="pdp-seller-link" href="#" class="btn btn-outline btn-sm">Visit Store</a>
           </div>
-          <div class="pdp-delivery-item">
-            <span class="pdp-delivery-icon">🔒</span>
-            <div>
-              <strong>Secure payment</strong>
-              <p>Powered by Paystack</p>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); padding: var(--space-4); background: var(--bg-surface-alt); border-radius: var(--border-radius-md);">
+            <div style="display: flex; gap: var(--space-2); align-items: flex-start;">
+              <span style="font-size: 1.2rem;">🚚</span>
+              <div><strong style="display: block; font-size: var(--text-xs);">Fast delivery</strong><p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">2–5 days</p></div>
+            </div>
+            <div style="display: flex; gap: var(--space-2); align-items: flex-start;">
+              <span style="font-size: 1.2rem;">↩️</span>
+              <div><strong style="display: block; font-size: var(--text-xs);">7-day returns</strong><p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Easy returns</p></div>
+            </div>
+            <div style="display: flex; gap: var(--space-2); align-items: flex-start;">
+              <span style="font-size: 1.2rem;">🔒</span>
+              <div><strong style="display: block; font-size: var(--text-xs);">Secure payment</strong><p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Via Paystack</p></div>
             </div>
           </div>
         </div>
-      </section>
-    </div>
 
-    <!-- Tabs -->
-    <section class="pdp-tabs" id="pdp-tabs" hidden>
-      <div class="pdp-tabs__nav" role="tablist">
-        <button class="pdp-tabs__btn is-active" data-tab="description" role="tab">Description</button>
-        <button class="pdp-tabs__btn" data-tab="specs" role="tab">Specifications</button>
-        <button class="pdp-tabs__btn" data-tab="reviews" role="tab">Reviews (<span id="tab-review-count">0</span>)</button>
       </div>
+    </article>
 
-      <div class="pdp-tabs__panels">
+    <section id="pdp-tabs" class="card" hidden style="margin-top: var(--space-6); border-radius: var(--border-radius-lg); overflow: hidden;">
+      <div role="tablist" style="display: flex; border-bottom: 1px solid var(--border-color); overflow-x: auto;">
+        <button class="pdp-tabs__btn is-active" data-tab="description" role="tab" style="padding: var(--space-4) var(--space-5); font-size: var(--text-sm); font-weight: 600; color: var(--color-primary); background: none; border: none; border-bottom: 3px solid var(--color-primary); cursor: pointer;">Description</button>
+        <button class="pdp-tabs__btn" data-tab="specs" role="tab" style="padding: var(--space-4) var(--space-5); font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer;">Specifications</button>
+        <button class="pdp-tabs__btn" data-tab="reviews" role="tab" style="padding: var(--space-4) var(--space-5); font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer;">Reviews (<span id="tab-review-count">0</span>)</button>
+      </div>
+      <div style="padding: var(--space-6);">
         <div class="pdp-tabs__panel is-active" data-panel="description" role="tabpanel">
-          <p id="tab-description"></p>
+          <p id="tab-description" style="line-height: 1.7; color: var(--text-secondary); white-space: pre-wrap; margin: 0;"></p>
         </div>
-        <div class="pdp-tabs__panel" data-panel="specs" role="tabpanel">
-          <table class="pdp-specs">
+        <div class="pdp-tabs__panel" data-panel="specs" role="tabpanel" style="display: none;">
+          <table style="width: 100%; border-collapse: collapse;">
             <tbody id="tab-specs-body"></tbody>
           </table>
         </div>
-        <div class="pdp-tabs__panel" data-panel="reviews" role="tabpanel">
-          <div class="reviews" id="reviews-root"></div>
+        <div class="pdp-tabs__panel" data-panel="reviews" role="tabpanel" style="display: none;">
+          <div id="reviews-root"></div>
         </div>
       </div>
     </section>
 
-    <!-- Related products -->
-    <section class="page-section" id="related-section" hidden>
-      <div class="section-heading">
-        <h2 class="section-heading__title">You may also like</h2>
-      </div>
+    <section id="related-section" hidden style="margin-top: var(--space-8);">
+      <h2 style="font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-4);">You may also like</h2>
       <div class="grid grid-products" id="related-products"></div>
     </section>
 
-    <!-- Recently viewed -->
-    <section class="page-section" id="recent-section" hidden>
-      <div class="section-heading">
-        <h2 class="section-heading__title">Recently viewed</h2>
-      </div>
-      <div class="grid grid-products" id="recent-products"></div>
-    </section>
   </main>
 
   <div id="site-footer"></div>
 
-  <script type="module" src="/js/pages/product.js"></script>
+  <script type="module" src="/js/pages/product.js?v=7"></script>
 </body>
 </html>
