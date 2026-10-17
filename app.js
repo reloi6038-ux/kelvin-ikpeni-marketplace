@@ -30,12 +30,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Trust proxy for Render.com (makes req.ip, req.protocol accurate)
+// Trust proxy for Render.com (accurate req.ip and req.protocol)
 app.set('trust proxy', 1);
 
 // ─────────────────────────────────────────────────────────────
-// CROSS-ORIGIN RESOURCE POLICY
-// Must be applied before helmet so images load cross-origin.
+// Cross-Origin Resource Policy (must come before helmet)
 // ─────────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -43,9 +42,7 @@ app.use((req, res, next) => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// SECURITY HEADERS (Helmet + CSP)
-// We now allow `https:` for images globally — necessary for
-// Unsplash images and any external CDN.
+// Security headers (helmet)
 // ─────────────────────────────────────────────────────────────
 app.use(
   helmet({
@@ -53,12 +50,11 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        // Allow all HTTPS images (Unsplash, Cloudinary, etc.)
-        imgSrc: ["'self'", "data:", "https:", "http:"],
-        connectSrc: ["'self'", "https://api.paystack.co"],
-        frameSrc: ["'self'", "https://checkout.paystack.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https:', 'http:'],
+        connectSrc: ["'self'", 'https://api.paystack.co'],
+        frameSrc: ["'self'", 'https://checkout.paystack.com'],
       },
     },
     crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -79,8 +75,7 @@ app.use(
 );
 
 // ─────────────────────────────────────────────────────────────
-// PAYSTACK WEBHOOK RAW BODY FIX
-// Must be registered BEFORE express.json()
+// Paystack webhook needs raw body — register BEFORE express.json()
 // ─────────────────────────────────────────────────────────────
 app.use(
   '/api/payments/webhook',
@@ -92,7 +87,7 @@ app.use(
 );
 
 // ─────────────────────────────────────────────────────────────
-// BODY PARSERS & UTILITIES
+// Body parsers & utilities
 // ─────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -106,16 +101,34 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
-// Static files
+// ─────────────────────────────────────────────────────────────
+// Static files — CRITICAL CACHE CONFIGURATION
+// HTML: never cache (so updates take effect immediately)
+// Assets (CSS/JS/images/fonts): cache for 7 days (performance)
+// ─────────────────────────────────────────────────────────────
 app.use(
   express.static(path.join(__dirname, 'public'), {
-    maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,
     etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        // HTML must always be fresh — no caching
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else if (/\.(css|js|mjs|jpg|jpeg|png|gif|svg|webp|ico|woff2?|ttf|otf)$/i.test(filePath)) {
+        // Static assets — safe to cache
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      } else {
+        // JSON, XML, txt — short cache
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+      }
+    },
   })
 );
 
 // ─────────────────────────────────────────────────────────────
-// HEALTH CHECK
+// Health check
 // ─────────────────────────────────────────────────────────────
 app.get('/api/health', async (req, res) => {
   const mongoose = (await import('mongoose')).default;
@@ -154,12 +167,14 @@ app.get('/api/health', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// API ROUTES
+// API routes
 // ─────────────────────────────────────────────────────────────
 app.use('/api', apiLimiter, routes);
 
 // ─────────────────────────────────────────────────────────────
-// 404 HANDLERS
+// 404 handling
+// API requests → JSON 404
+// HTML requests → nice 404 page
 // ─────────────────────────────────────────────────────────────
 app.use('/api', notFound);
 
@@ -172,7 +187,7 @@ app.use((req, res, next) => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// GLOBAL ERROR HANDLER
+// Global error handler (must be last)
 // ─────────────────────────────────────────────────────────────
 app.use(errorHandler);
 
