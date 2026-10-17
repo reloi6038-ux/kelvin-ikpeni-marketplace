@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <div class="auth-page">
+      <aside class="auth-page__aside">
+        <h2>Join Nigeria's #1 marketplace</h2>
+        <p>Thousands of products from verified sellers, fast delivery, secure payments.</p>
+        <div class="auth-page__features">
+          <div class="auth-feature"><span class="auth-feature__icon">🚀</span> Fast delivery nationwide</div>
+          <div class="auth-feature"><span class="auth-feature__icon">🛡️</span> Buyer protection on every order</div>
+          <div class="auth-feature"><span class="auth-feature__icon">💬</span> 24/7 customer support</div>
+          <div class="auth-feature"><span class="auth-feature__icon">💰</span> Best prices, always</div>
+        </div>
+      </aside>
+
+      <div class="auth-page__form-wrap">
+        <div class="auth-form__header">
+          <h1 class="auth-form__title">Create account</h1>
+          <p class="auth-form__subtitle">It only takes a minute</p>
+        </div>
+
+        <div class="auth-form__error" id="register-error"></div>
+
+        <form id="register-form">
+          <div class="form-group">
+            <label class="form-label" for="reg-name">Full name</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="Kelvin Ikpeni" required minlength="2" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Email</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-phone">Phone (optional)</label>
+            <input type="tel" id="reg-phone" class="form-input" placeholder="08012345678" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-password2">Confirm password</label>
+            <input type="password" id="reg-password2" class="form-input" placeholder="Re-enter password" required minlength="8" autocomplete="new-password" />
+          </div>
+          <label class="form-checkbox" style="margin-bottom: var(--space-4);">
+            <input type="checkbox" id="reg-terms" required />
+            <span>I agree to the <a href="/pages/terms.html" target="_blank">Terms</a> and <a href="/pages/privacy.html" target="_blank">Privacy Policy</a></span>
+          </label>
+          <button type="submit" class="btn btn-primary auth-form__submit" id="register-btn">Create account</button>
+        </form>
+
+        <div class="auth-form__footer">
+          Already have an account? <a href="/pages/login.html">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/register.js"></script>
+</body>
+</html>

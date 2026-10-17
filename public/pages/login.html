@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <div class="auth-page">
+      <aside class="auth-page__aside">
+        <h2>Welcome back 👋</h2>
+        <p>Sign in to track orders, save favourites, and check out faster.</p>
+        <div class="auth-page__features">
+          <div class="auth-feature"><span class="auth-feature__icon">📦</span> Track your orders in real time</div>
+          <div class="auth-feature"><span class="auth-feature__icon">♡</span> Save products to your wishlist</div>
+          <div class="auth-feature"><span class="auth-feature__icon">⚡</span> Faster checkout with saved addresses</div>
+          <div class="auth-feature"><span class="auth-feature__icon">🎁</span> Exclusive member-only deals</div>
+        </div>
+      </aside>
+
+      <div class="auth-page__form-wrap">
+        <div class="auth-form__header">
+          <h1 class="auth-form__title">Sign in</h1>
+          <p class="auth-form__subtitle">Welcome back to Kelvin Ikpeni Marketplace</p>
+        </div>
+
+        <div class="auth-form__error" id="login-error"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-email">Email</label>
+            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Your password" required autocomplete="current-password" />
+          </div>
+          <div class="auth-form__links">
+            <label class="form-checkbox">
+              <input type="checkbox" id="remember-me" />
+              <span>Remember me</span>
+            </label>
+            <a href="/pages/forgot-password.html">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary auth-form__submit" id="login-btn">Sign in</button>
+        </form>
+
+        <div class="auth-form__divider">or</div>
+
+        <div class="auth-form__footer">
+          Don't have an account? <a href="/pages/register.html">Create one</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/login.js"></script>
+</body>
+</html>

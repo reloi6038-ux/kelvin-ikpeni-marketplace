@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container" style="padding: var(--space-6) 0;">
+    <div style="margin-bottom: var(--space-6);">
+      <h1 style="font-size: var(--text-2xl); margin-bottom: 4px;">Admin Control Panel</h1>
+      <p class="text-muted">Platform overview and moderation</p>
+    </div>
+
+    <div id="admin-loading" style="text-align: center; padding: var(--space-10) 0;">
+      <div class="loader loader-lg" style="margin: 0 auto;"></div>
+    </div>
+
+    <div id="admin-content" style="display: none;">
+      <!-- Stats -->
+      <div class="grid grid-4" style="margin-bottom: var(--space-8);">
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Total Revenue</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--color-primary);" id="admin-revenue">₦0</div>
+        </div>
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Total Orders</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700;" id="admin-orders">0</div>
+        </div>
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Active Users</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700;" id="admin-users">0</div>
+        </div>
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Active Sellers</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700;" id="admin-sellers">0</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6);">
+        <!-- Pending Sellers -->
+        <div class="card" style="padding: var(--space-5);">
+          <h2 style="font-size: var(--text-lg); margin-bottom: var(--space-4); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-2);">Seller Applications</h2>
+          <div id="pending-sellers-list">
+            <p class="text-muted text-sm">Loading…</p>
+          </div>
+        </div>
+
+        <!-- Pending Products -->
+        <div class="card" style="padding: var(--space-5);">
+          <h2 style="font-size: var(--text-lg); margin-bottom: var(--space-4); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-2);">Product Approvals</h2>
+          <div id="pending-products-list">
+            <p class="text-muted text-sm">Loading…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/admin-dashboard.js"></script>
+</body>
+</html>

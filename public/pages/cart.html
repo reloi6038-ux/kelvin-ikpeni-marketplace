@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/cart.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <div class="breadcrumbs">
+      <a href="/">Home</a> <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current">Cart</span>
+    </div>
+
+    <div id="cart-loading" style="text-align:center; padding: var(--space-16) 0;">
+      <div class="loader loader-lg" style="margin: 0 auto;"></div>
+    </div>
+
+    <div id="cart-empty" class="empty-state" style="display:none;">
+      <div class="empty-state__icon">🛒</div>
+      <h2 class="empty-state__title">Your cart is empty</h2>
+      <p class="empty-state__message">Start shopping to add items to your cart.</p>
+      <a href="/pages/products.html" class="btn btn-primary">Browse Products</a>
+    </div>
+
+    <div class="cart-layout" id="cart-layout" style="display:none;">
+      <section class="cart-items" id="cart-items"></section>
+
+      <aside class="cart-summary">
+        <h3>Order Summary</h3>
+
+        <div class="cart-summary__coupon" id="coupon-section">
+          <form class="cart-coupon-form" id="coupon-form">
+            <input type="text" class="form-input" id="coupon-input" placeholder="Coupon code" />
+            <button type="submit" class="btn btn-outline btn-sm" id="coupon-btn">Apply</button>
+          </form>
+        </div>
+
+        <div class="cart-summary__row">
+          <span>Subtotal</span>
+          <span id="sum-subtotal">₦0</span>
+        </div>
+        <div class="cart-summary__row" id="sum-discount-row" style="color:var(--color-success); display:none;">
+          <span>Discount</span>
+          <span id="sum-discount">-₦0</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Delivery</span>
+          <span id="sum-delivery">₦0</span>
+        </div>
+        <div class="cart-summary__row cart-summary__row--total">
+          <span>Total</span>
+          <span id="sum-total">₦0</span>
+        </div>
+
+        <button class="btn btn-primary cart-summary__checkout" id="checkout-btn">
+          Proceed to Checkout →
+        </button>
+        <a href="/pages/products.html" class="btn btn-outline" style="width:100%; margin-top: var(--space-2);">
+          Continue Shopping
+        </a>
+      </aside>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/cart.js"></script>
+</body>
+</html>

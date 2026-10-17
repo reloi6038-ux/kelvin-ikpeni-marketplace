@@ -7,11 +7,12 @@
  *  - Category navigation (links to /pages/category.html?slug=...)
  *  - Mobile drawer
  *  - Sticky shadow on scroll
- *  - Badge counters (cart + wishlist) — will be live in Stage 11
- *  - Pre-fills search input when arriving with ?search=...
+ *  - Live cart + wishlist badges
+ *  - Logged-in user state + logout menu
  */
 
 import { api } from '../api.js';
+import { auth } from '../auth.js';
 
 const HEADER_HTML = `
   <div class="announcement-bar">
@@ -49,13 +50,22 @@ const HEADER_HTML = `
       </div>
 
       <div class="header__actions">
-        <a href="/pages/login.html" class="header__action" id="account-link">
-          <span class="header__action-icon">👤</span>
-          <span class="header__action-label">
-            <small id="account-greeting">Sign in</small>
-            <strong id="account-label">Account</strong>
-          </span>
-        </a>
+        <div class="header__account-wrap" style="position: relative;">
+          <a href="/pages/login.html" class="header__action" id="account-link">
+            <span class="header__action-icon">👤</span>
+            <span class="header__action-label">
+              <small id="account-greeting">Sign in</small>
+              <strong id="account-label">Account</strong>
+            </span>
+          </a>
+          <div class="header__account-menu" id="account-menu" style="display:none; position: absolute; top: 100%; right: 0; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); box-shadow: var(--shadow-lg); min-width: 200px; z-index: 100; padding: 8px; margin-top: 8px;">
+            <a href="/pages/account.html" style="display: block; padding: 10px 16px; color: var(--text-primary); text-decoration: none; border-radius: var(--border-radius-sm);" class="dropdown-item">My Profile</a>
+            <a href="/pages/account.html#orders" style="display: block; padding: 10px 16px; color: var(--text-primary); text-decoration: none; border-radius: var(--border-radius-sm);" class="dropdown-item">My Orders</a>
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 4px 0;" />
+            <button id="header-logout-btn" style="display: block; width: 100%; text-align: left; padding: 10px 16px; color: var(--color-danger); background: none; border: none; cursor: pointer; border-radius: var(--border-radius-sm);" class="dropdown-item">Log out</button>
+          </div>
+        </div>
+
         <a href="/pages/wishlist.html" class="header__action" aria-label="Wishlist">
           <span class="header__action-icon">
             ♡
@@ -109,9 +119,6 @@ const HEADER_HTML = `
   </div>
 `;
 
-/* ═══════════════════════════════════════════════════════════
-   Load categories and inject navigation links
-   ═══════════════════════════════════════════════════════════ */
 const loadCategories = async () => {
   try {
     const data = await api.get('/categories?level=0');
@@ -122,14 +129,12 @@ const loadCategories = async () => {
     const featured = data.categories.slice(0, 10);
 
     featured.forEach((cat) => {
-      // Desktop nav link
       const a = document.createElement('a');
       a.href = `/pages/category.html?slug=${encodeURIComponent(cat.slug)}`;
       a.className = 'header__nav-link';
       a.textContent = cat.name;
       nav.appendChild(a);
 
-      // Mobile drawer link
       const mA = document.createElement('a');
       mA.href = `/pages/category.html?slug=${encodeURIComponent(cat.slug)}`;
       mA.className = 'mobile-menu__link';
@@ -141,16 +146,12 @@ const loadCategories = async () => {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Search — form submit + live suggestions
-   ═══════════════════════════════════════════════════════════ */
 const initSearch = () => {
   const form = document.getElementById('search-form');
   const input = document.getElementById('search-input');
   const box = document.getElementById('search-suggestions');
   if (!form || !input || !box) return;
 
-  // Pre-fill from URL if ?search=... is present
   const urlParams = new URLSearchParams(window.location.search);
   const presetSearch = urlParams.get('search');
   if (presetSearch) input.value = presetSearch;
@@ -190,12 +191,7 @@ const initSearch = () => {
           .map(
             (p) => `
           <a class="search-suggestions__item" href="/pages/product.html?slug=${encodeURIComponent(p.slug)}">
-            <img
-              class="search-suggestions__img"
-              src="${p.thumbnail || (p.images && p.images[0]) || '/images/placeholders/product.svg'}"
-              alt=""
-              onerror="this.onerror=null;this.src='/images/placeholders/product.svg';"
-            />
+            <img class="search-suggestions__img" src="${p.thumbnail || (p.images && p.images[0]) || '/images/placeholders/product.svg'}" alt="" onerror="this.onerror=null;this.src='/images/placeholders/product.svg';" />
             <div class="search-suggestions__info">
               <div class="search-suggestions__name">${p.name}</div>
               <div class="search-suggestions__price">₦${(p.price || 0).toLocaleString('en-NG')}</div>
@@ -212,22 +208,17 @@ const initSearch = () => {
     }, 250);
   });
 
-  // Close suggestions when clicking outside
   document.addEventListener('click', (e) => {
     if (!form.contains(e.target) && !box.contains(e.target)) {
       box.classList.remove('is-active');
     }
   });
 
-  // Close on Escape
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') box.classList.remove('is-active');
   });
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Mobile menu
-   ═══════════════════════════════════════════════════════════ */
 const initMobileMenu = () => {
   const menu = document.getElementById('mobile-menu');
   if (!menu) return;
@@ -249,15 +240,11 @@ const initMobileMenu = () => {
     el.addEventListener('click', close)
   );
 
-  // Close on Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && menu.classList.contains('is-open')) close();
   });
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Sticky header shadow on scroll
-   ═══════════════════════════════════════════════════════════ */
 const initScrollShadow = () => {
   const header = document.getElementById('site-header');
   if (!header) return;
@@ -269,10 +256,6 @@ const initScrollShadow = () => {
   onScroll();
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Badge counters — reads from localStorage for now.
-   Stage 11 will replace this with live cart/wishlist APIs.
-   ═══════════════════════════════════════════════════════════ */
 const initBadges = () => {
   const cartCount = Number(localStorage.getItem('cartCount') || 0);
   const wishlistCount = Number(localStorage.getItem('wishlistCount') || 0);
@@ -288,34 +271,57 @@ const initBadges = () => {
     wishlistBadge.textContent = wishlistCount;
     wishlistBadge.style.display = 'flex';
   }
+
+  // Fetch real counts if logged in
+  if (auth.isLoggedIn()) {
+    api.get('/cart').then(data => {
+      if (data.itemCount > 0 && cartBadge) {
+        cartBadge.textContent = data.itemCount;
+        cartBadge.style.display = 'flex';
+        localStorage.setItem('cartCount', String(data.itemCount));
+      }
+    }).catch(() => {});
+
+    api.get('/wishlist').then(data => {
+      if (data.count > 0 && wishlistBadge) {
+        wishlistBadge.textContent = data.count;
+        wishlistBadge.style.display = 'flex';
+        localStorage.setItem('wishlistCount', String(data.count));
+      }
+    }).catch(() => {});
+  }
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Account label — placeholder for Stage 10 auth
-   ═══════════════════════════════════════════════════════════ */
 const initAccountLabel = () => {
   const greeting = document.getElementById('account-greeting');
   const label = document.getElementById('account-label');
   const link = document.getElementById('account-link');
+  const menu = document.getElementById('account-menu');
   if (!greeting || !label || !link) return;
 
-  try {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      const firstName = (user.name || '').split(' ')[0] || 'Account';
-      greeting.textContent = `Hi, ${firstName}`;
-      label.textContent = 'My Account';
-      link.href = '/pages/account.html';
-    }
-  } catch {
-    // Ignore malformed localStorage
+  const user = auth.getUser();
+  if (user) {
+    const firstName = (user.name || '').split(' ')[0] || 'Account';
+    greeting.textContent = `Hi, ${firstName}`;
+    label.textContent = 'My Account';
+    link.href = '/pages/account.html';
+
+    // Show dropdown on hover
+    link.addEventListener('mouseenter', () => { if(menu) menu.style.display = 'block'; });
+    link.parentElement.addEventListener('mouseleave', () => { if(menu) menu.style.display = 'none'; });
+
+    document.getElementById('header-logout-btn')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await auth.logout();
+      window.location.href = '/';
+    });
+  } else {
+    greeting.textContent = 'Sign in';
+    label.textContent = 'Account';
+    link.href = '/pages/login.html';
   }
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Public API
-   ═══════════════════════════════════════════════════════════ */
 export const mountHeader = () => {
   const target = document.getElementById('site-header');
   if (!target) return;

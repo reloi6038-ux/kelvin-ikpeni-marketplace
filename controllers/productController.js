@@ -2,10 +2,11 @@
  * controllers/productController.js
  * --------------------------------
  * Handles all product-related endpoints:
- *  - getProducts        → GET /api/products (filters, sort, pagination)
- *  - getProductBySlug   → GET /api/products/:slug
- *  - getHomepageData    → GET /api/products/homepage
- *  - getProductFacets   → GET /api/products/facets (brands + price range)
+ *  - getProducts          → GET /api/products (filters, sort, pagination)
+ *  - getProductBySlug     → GET /api/products/:slug
+ *  - getHomepageData      → GET /api/products/homepage
+ *  - getProductFacets     → GET /api/products/facets (brands + price range)
+ *  - getRelatedProducts   → GET /api/products/:slug/related
  */
 
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -137,24 +138,9 @@ export const getProducts = asyncHandler(async (req, res) => {
 });
 
 /* ═══════════════════════════════════════════════════════════
-   GET /api/products/:slug
-   ═══════════════════════════════════════════════════════════ */
-export const getProductBySlug = asyncHandler(async (req, res) => {
-  const product = await Product.findOne({ slug: req.params.slug, status: 'active' })
-    .populate('category', 'name slug')
-    .populate('seller', 'storeName slug rating');
-
-  if (!product) throw ApiError.notFound('Product not found');
-
-  // Increment view count (fire-and-forget)
-  Product.updateOne({ _id: product._id }, { $inc: { views: 1 } }).catch(() => {});
-
-  res.status(200).json(new ApiResponse(200, product, 'Product fetched'));
-});
-
-/* ═══════════════════════════════════════════════════════════
    GET /api/products/homepage
-   Aggregated homepage sections.
+   Aggregated sections for the homepage (one request).
+   NOTE: Must be defined before /:slug route.
    ═══════════════════════════════════════════════════════════ */
 export const getHomepageData = asyncHandler(async (req, res) => {
   const limit = 8;
@@ -221,7 +207,8 @@ export const getHomepageData = asyncHandler(async (req, res) => {
 
 /* ═══════════════════════════════════════════════════════════
    GET /api/products/facets
-   Returns available brands + price range for filter sidebar.
+   Returns available brands + price range for the filter sidebar.
+   NOTE: Must be defined before /:slug route.
    ═══════════════════════════════════════════════════════════ */
 export const getProductFacets = asyncHandler(async (req, res) => {
   const { category } = req.query;
@@ -276,6 +263,54 @@ export const getProductFacets = asyncHandler(async (req, res) => {
 });
 
 /* ═══════════════════════════════════════════════════════════
+   GET /api/products/:slug/related
+   Products from the same category, excluding the current one.
+   NOTE: Must be defined before /:slug route.
+   ═══════════════════════════════════════════════════════════ */
+export const getRelatedProducts = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+  const limit = Math.min(12, Math.max(1, Number(req.query.limit) || 8));
+
+  const current = await Product.findOne({ slug, status: 'active' })
+    .select('category _id')
+    .lean();
+
+  if (!current) throw ApiError.notFound('Product not found');
+
+  const related = await Product.find({
+    status: 'active',
+    category: current.category,
+    _id: { $ne: current._id },
+  })
+    .sort({ sold: -1, 'rating.average': -1 })
+    .limit(limit)
+    .lean();
+
+  res.status(200).json(
+    new ApiResponse(200, { products: related }, 'Related products fetched')
+  );
+});
+
+/* ═══════════════════════════════════════════════════════════
+   GET /api/products/:slug
+   Single product by slug.
+   NOTE: Defined LAST so it doesn't shadow /homepage, /facets,
+   or /:slug/related.
+   ═══════════════════════════════════════════════════════════ */
+export const getProductBySlug = asyncHandler(async (req, res) => {
+  const product = await Product.findOne({ slug: req.params.slug, status: 'active' })
+    .populate('category', 'name slug')
+    .populate('seller', 'storeName slug rating');
+
+  if (!product) throw ApiError.notFound('Product not found');
+
+  // Fire-and-forget view count increment
+  Product.updateOne({ _id: product._id }, { $inc: { views: 1 } }).catch(() => {});
+
+  res.status(200).json(new ApiResponse(200, product, 'Product fetched'));
+});
+
+/* ═══════════════════════════════════════════════════════════
    Default export
    ═══════════════════════════════════════════════════════════ */
 export default {
@@ -283,4 +318,5 @@ export default {
   getProductBySlug,
   getHomepageData,
   getProductFacets,
+  getRelatedProducts,
 };

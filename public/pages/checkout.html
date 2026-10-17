@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/cart.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <div class="breadcrumbs">
+      <a href="/">Home</a> <span class="breadcrumbs__separator">›</span>
+      <a href="/pages/cart.html">Cart</a> <span class="breadcrumbs__separator">›</span>
+      <span class="breadcrumbs__current">Checkout</span>
+    </div>
+
+    <h1 style="margin: var(--space-4) 0;">Checkout</h1>
+
+    <div class="cart-layout" id="checkout-layout" style="display:none;">
+      <section>
+        <div class="card" style="padding: var(--space-6); margin-bottom: var(--space-4);">
+          <h3 style="margin-bottom: var(--space-4);">1. Contact & Shipping</h3>
+          <form id="shipping-form">
+            <div class="form-group">
+              <label class="form-label" for="ship-name">Full name <span class="required">*</span></label>
+              <input type="text" id="ship-name" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ship-phone">Phone <span class="required">*</span></label>
+              <input type="tel" id="ship-phone" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ship-street">Street address <span class="required">*</span></label>
+              <input type="text" id="ship-street" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ship-city">City <span class="required">*</span></label>
+              <input type="text" id="ship-city" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ship-state">State <span class="required">*</span></label>
+              <input type="text" id="ship-state" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ship-postal">Postal code (optional)</label>
+              <input type="text" id="ship-postal" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ship-notes">Delivery notes (optional)</label>
+              <textarea id="ship-notes" class="form-input" rows="2"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="padding: var(--space-6);">
+          <h3 style="margin-bottom: var(--space-4);">2. Payment</h3>
+          <label class="filter-option" style="padding: var(--space-3); background: var(--color-primary-soft); border-radius: var(--border-radius-md); cursor: default;">
+            <input type="radio" checked disabled />
+            <span><strong>Pay with Paystack</strong> — Card, Bank, USSD, Transfer</span>
+          </label>
+          <p class="text-muted text-sm" style="margin-top: var(--space-3);">
+            🔒 Secure payment. Test mode — no real money is charged.
+          </p>
+        </div>
+      </section>
+
+      <aside class="cart-summary">
+        <h3>Order Summary</h3>
+        <div id="checkout-items" style="max-height: 300px; overflow-y: auto; margin-bottom: var(--space-4);"></div>
+
+        <div class="cart-summary__row"><span>Subtotal</span><span id="co-subtotal">₦0</span></div>
+        <div class="cart-summary__row" id="co-discount-row" style="display:none; color: var(--color-success);"><span>Discount</span><span id="co-discount">-₦0</span></div>
+        <div class="cart-summary__row"><span>Delivery</span><span id="co-delivery">₦0</span></div>
+        <div class="cart-summary__row cart-summary__row--total"><span>Total</span><span id="co-total">₦0</span></div>
+
+        <button class="btn btn-primary cart-summary__checkout" id="place-order-btn" style="margin-top: var(--space-4);">Pay Now →</button>
+      </aside>
+    </div>
+
+    <div id="checkout-empty" class="empty-state" style="display:none;">
+      <div class="empty-state__icon">🛒</div>
+      <h2 class="empty-state__title">Your cart is empty</h2>
+      <a href="/pages/products.html" class="btn btn-primary">Browse Products</a>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/checkout.js"></script>
+</body>
+</html>

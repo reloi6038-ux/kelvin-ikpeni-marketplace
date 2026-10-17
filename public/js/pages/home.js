@@ -10,22 +10,20 @@ import { mountHeader } from '../components/header.js';
 import { mountFooter } from '../components/footer.js';
 import { productCard } from '../components/productCard.js';
 import { toast } from '../components/toast.js';
+import { auth } from '../auth.js';
 
-/**
- * Render a grid of product cards into a target element.
- * @param {string} targetId
- * @param {Array} products
- */
 const renderGrid = (targetId, products) => {
   const target = document.getElementById(targetId);
   if (!target) return;
 
+  target.innerHTML = '';
+
   if (!products || products.length === 0) {
     target.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <div class="empty-state__icon">🛒</div>
+      <div class="empty-state" style="grid-column: 1 / -1; padding: var(--space-8) 0;">
+        <div class="empty-state__icon" style="font-size: 2rem;">📦</div>
         <h3 class="empty-state__title">No products yet</h3>
-        <p class="empty-state__message">Check back soon — new products are added daily.</p>
+        <p class="empty-state__message text-sm">Check back soon — new products are added daily.</p>
       </div>
     `;
     return;
@@ -34,12 +32,11 @@ const renderGrid = (targetId, products) => {
   target.innerHTML = products.map(productCard).join('');
 };
 
-/**
- * Render the category card grid.
- */
 const renderCategories = (categories) => {
   const target = document.getElementById('homepage-categories');
   if (!target) return;
+
+  target.innerHTML = '';
 
   if (!categories || categories.length === 0) {
     target.innerHTML = '<p class="text-muted">No categories available.</p>';
@@ -62,10 +59,6 @@ const renderCategories = (categories) => {
     .join('');
 };
 
-/**
- * Live countdown timer for the flash sale section.
- * @param {string|Date} endTime
- */
 const startCountdown = (endTime) => {
   const hoursEl = document.getElementById('flash-hours');
   const minsEl = document.getElementById('flash-mins');
@@ -97,61 +90,70 @@ const startCountdown = (endTime) => {
   setInterval(tick, 1000);
 };
 
-/**
- * Global "Add to Cart" + "Wishlist" click handler.
- * Stage 11 will replace the toast messages with real API calls.
- */
 const setupGlobalActions = () => {
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     const cartBtn = e.target.closest('[data-action="add-to-cart"]');
     if (cartBtn && !cartBtn.disabled) {
       e.preventDefault();
-      toast('Added to cart — full cart arrives in Stage 11', 'success', 'Added');
+      const pid = cartBtn.dataset.productId;
+      if (!auth.isLoggedIn()) {
+        toast('Please sign in to add items to cart', 'warning');
+        setTimeout(() => (window.location.href = '/pages/login.html'), 1000);
+        return;
+      }
+      cartBtn.disabled = true;
+      const original = cartBtn.textContent;
+      cartBtn.textContent = '…';
+      try {
+        const data = await api.post('/cart/add', { productId: pid, quantity: 1 });
+        toast('Added to cart', 'success');
+        const badge = document.getElementById('cart-count');
+        if (badge && data.itemCount > 0) {
+          badge.textContent = data.itemCount;
+          badge.style.display = 'flex';
+          localStorage.setItem('cartCount', String(data.itemCount));
+        }
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+      cartBtn.disabled = false;
+      cartBtn.textContent = original;
       return;
     }
 
     const wishlistBtn = e.target.closest('[data-action="wishlist"]');
     if (wishlistBtn) {
       e.preventDefault();
-      toast('Saved to wishlist — wishlist page arrives in Stage 11', 'info', 'Saved');
+      const pid = wishlistBtn.dataset.productId;
+      if (!auth.isLoggedIn()) {
+        toast('Please sign in to save items', 'warning');
+        setTimeout(() => (window.location.href = '/pages/login.html'), 1000);
+        return;
+      }
+      try {
+        await api.post('/wishlist/add', { productId: pid });
+        wishlistBtn.classList.add('is-active');
+        wishlistBtn.textContent = '♥';
+        toast('Saved to wishlist', 'success');
+        const data = await api.get('/wishlist');
+        const badge = document.getElementById('wishlist-count');
+        if (badge && data.count > 0) {
+          badge.textContent = data.count;
+          badge.style.display = 'flex';
+          localStorage.setItem('wishlistCount', String(data.count));
+        }
+      } catch (err) {
+        toast(err.message, 'error');
+      }
       return;
     }
-
-    const quickViewBtn = e.target.closest('[data-action="quickview"]');
-    if (quickViewBtn) {
-      e.preventDefault();
-      const card = quickViewBtn.closest('.product-card');
-      const title = card?.querySelector('.product-card__title')?.textContent?.trim();
-      toast(`Quick view for "${title}" arrives in Stage 8`, 'info', 'Coming soon');
-    }
   });
 };
 
-/**
- * Newsletter form (placeholder — will wire to backend later).
- */
-const setupNewsletter = () => {
-  const form = document.querySelector('.newsletter__form');
-  if (!form) return;
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = form.querySelector('.newsletter__input');
-    const email = input?.value?.trim();
-    if (!email) return;
-    toast(`Thanks! We'll notify ${email} about new deals.`, 'success', 'Subscribed');
-    input.value = '';
-  });
-};
-
-/**
- * Main init.
- */
 const init = async () => {
   mountHeader();
   mountFooter();
   setupGlobalActions();
-  setupNewsletter();
 
   try {
     const data = await api.get('/products/homepage');
@@ -168,14 +170,12 @@ const init = async () => {
     if (firstFlash?.flashSaleEndsAt) {
       startCountdown(firstFlash.flashSaleEndsAt);
     } else {
-      // Fallback: 24 hours from now (so the timer is never dead)
       startCountdown(new Date(Date.now() + 24 * 60 * 60 * 1000));
     }
   } catch (err) {
     console.error('Homepage load failed:', err);
     toast('Could not load homepage content. Please refresh.', 'error', 'Oops');
 
-    // Remove skeletons so the page doesn't hang on loading state
     [
       'featured-products',
       'trending-products',

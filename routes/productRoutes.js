@@ -13,6 +13,7 @@ import {
   getProductBySlug,
   getHomepageData,
   getProductFacets,
+  getRelatedProducts,
 } from '../controllers/productController.js';
 
 const router = express.Router();
@@ -25,10 +26,14 @@ router.get('/', getProducts);
 // GET /api/products/homepage — aggregated homepage sections
 router.get('/homepage', getHomepageData);
 
-// GET /api/products/facets — available brands + price range for filters
+// GET /api/products/facets — available brands + price range
 router.get('/facets', getProductFacets);
 
+// GET /api/products/:slug/related — related products
+router.get('/:slug/related', getRelatedProducts);
+
 /* ─────────── Dynamic slug route LAST ─────────── */
+
 // GET /api/products/:slug — single product
 router.get('/:slug', getProductBySlug);
 

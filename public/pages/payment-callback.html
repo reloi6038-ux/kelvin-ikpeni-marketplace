@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Processing Payment — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="container" style="min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: var(--space-10) 0;">
+    <div class="card" style="max-width: 500px; width: 100%; padding: var(--space-8); text-align: center;">
+      <div id="pc-loader" style="margin-bottom: var(--space-4);">
+        <div class="loader loader-lg" style="margin: 0 auto;"></div>
+      </div>
+      <div id="pc-icon" style="font-size: 3rem; margin-bottom: var(--space-3);" hidden></div>
+      <h1 id="pc-title" style="margin-bottom: var(--space-3); font-size: var(--text-2xl);">Verifying payment…</h1>
+      <p id="pc-message" style="color: var(--text-secondary); margin-bottom: var(--space-6);">Please wait — this only takes a moment.</p>
+      <div id="pc-actions" hidden style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+        <a href="/pages/account.html#orders" class="btn btn-primary">View My Orders</a>
+        <a href="/pages/products.html" class="btn btn-outline">Continue Shopping</a>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/payment-callback.js"></script>
+</body>
+</html>

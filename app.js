@@ -3,11 +3,6 @@
  * ------
  * Builds and configures the Express application.
  * Does NOT start the HTTP server — that's server.js.
- *
- * Keeping app.js separate from server.js is important for:
- *   1. Testing — Supertest can import `app` without opening a port
- *   2. Deployment — Render/other hosts can require just the app
- *   3. Clarity — one file configures, another file boots
  */
 
 import express from 'express';
@@ -30,29 +25,15 @@ import { ApiResponse } from './utils/ApiResponse.js';
 // ─── API Routes ───
 import routes from './routes/index.js';
 
-// ─────────────────────────────────────────────────────────────
-// __dirname equivalent for ES modules
-// ─────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ─────────────────────────────────────────────────────────────
-// Create Express app
-// ─────────────────────────────────────────────────────────────
 const app = express();
 
-// ─────────────────────────────────────────────────────────────
-// Trust proxy — required on Render.com (which sits behind a proxy)
-// Makes req.ip and req.protocol accurate.
-// ─────────────────────────────────────────────────────────────
+// Trust proxy for Render.com
 app.set('trust proxy', 1);
 
-// ─────────────────────────────────────────────────────────────
-// Security headers (helmet)
-// CSP is disabled for now so we can load Cloudinary images,
-// Google Fonts, and Unsplash images. We'll turn on a strict CSP
-// in Stage 17 (Security Hardening).
-// ─────────────────────────────────────────────────────────────
+// Security headers
 app.use(
   helmet({
     contentSecurityPolicy: false,
@@ -61,9 +42,7 @@ app.use(
   })
 );
 
-// ─────────────────────────────────────────────────────────────
-// CORS — allow the frontend origin to call the API
-// ─────────────────────────────────────────────────────────────
+// CORS
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5000',
@@ -74,33 +53,33 @@ app.use(
 );
 
 // ─────────────────────────────────────────────────────────────
-// Body parsers
+// PAYSTACK WEBHOOK RAW BODY FIX
+// Paystack requires the raw request body to verify signatures.
+// This MUST be registered BEFORE the global express.json() parser.
 // ─────────────────────────────────────────────────────────────
+app.use(
+  '/api/payments/webhook',
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  })
+);
+
+// Body parsers (for all other routes)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// ─────────────────────────────────────────────────────────────
-// Cookie parser — reads cookies into req.cookies
-// ─────────────────────────────────────────────────────────────
 app.use(cookieParser());
-
-// ─────────────────────────────────────────────────────────────
-// Response compression (gzip)
-// ─────────────────────────────────────────────────────────────
 app.use(compression());
 
-// ─────────────────────────────────────────────────────────────
-// HTTP request logging
-// ─────────────────────────────────────────────────────────────
+// Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
   app.use(morgan('combined'));
 }
 
-// ─────────────────────────────────────────────────────────────
-// Static files — serve the frontend from public/
-// ─────────────────────────────────────────────────────────────
+// Static files
 app.use(
   express.static(path.join(__dirname, 'public'), {
     maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,
@@ -108,13 +87,7 @@ app.use(
   })
 );
 
-// ─────────────────────────────────────────────────────────────
-// API: Health check with live database status
-// Used by:
-//  - You, to verify things work after every change
-//  - Render.com, to detect if the service is alive
-//  - Uptime monitors in production
-// ─────────────────────────────────────────────────────────────
+// Health check
 app.get('/api/health', async (req, res) => {
   const mongoose = (await import('mongoose')).default;
 
@@ -154,38 +127,13 @@ app.get('/api/health', async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 // API ROUTES
 // Mounted at /api. Rate limiter applied globally here.
-//
-// Routes currently mounted (Stage 7):
-//   GET  /api/categories
-//   GET  /api/categories/:slug
-//   GET  /api/products
-//   GET  /api/products/homepage
-//   GET  /api/products/:slug
-//
-// Future stages will add:
-//   /api/auth        (Stage 10)
-//   /api/cart        (Stage 11)
-//   /api/wishlist    (Stage 11)
-//   /api/orders      (Stage 12)
-//   /api/payments    (Stage 13)
-//   /api/reviews     (Stage 9)
-//   /api/sellers     (Stage 14)
-//   /api/admin       (Stage 15)
-//   /api/coupons     (Stage 12)
 // ─────────────────────────────────────────────────────────────
 app.use('/api', apiLimiter, routes);
 
-// ─────────────────────────────────────────────────────────────
-// 404 handler — must come AFTER all routes
-// ─────────────────────────────────────────────────────────────
+// 404 handler
 app.use(notFound);
 
-// ─────────────────────────────────────────────────────────────
-// Global error handler — must be the LAST middleware
-// ─────────────────────────────────────────────────────────────
+// Global error handler
 app.use(errorHandler);
 
-// ─────────────────────────────────────────────────────────────
-// Export for server.js and tests
-// ─────────────────────────────────────────────────────────────
 export default app;

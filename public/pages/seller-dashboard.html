@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seller Dashboard — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+  <link rel="stylesheet" href="/css/auth.css" /> <!-- Reuse auth layouts for forms -->
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container" style="padding: var(--space-6) 0;">
+    <!-- Page Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-4);">
+      <div>
+        <h1 style="font-size: var(--text-2xl); margin-bottom: 4px;">Seller Dashboard</h1>
+        <p class="text-muted" id="seller-store-name">Loading store info…</p>
+      </div>
+      <button class="btn btn-primary" id="add-product-btn">+ Add New Product</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="dashboard-loading" style="text-align: center; padding: var(--space-10) 0;">
+      <div class="loader loader-lg" style="margin: 0 auto;"></div>
+    </div>
+
+    <!-- Pending State -->
+    <div id="dashboard-pending" class="card" style="display: none; padding: var(--space-8); text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: var(--space-4);">⏳</div>
+      <h2 style="margin-bottom: var(--space-2);">Application Under Review</h2>
+      <p class="text-muted">Your store application is pending admin approval. You will be able to add products once approved.</p>
+    </div>
+
+    <!-- Full Dashboard -->
+    <div id="dashboard-content" style="display: none;">
+      <!-- Stats Grid -->
+      <div class="grid grid-4" style="margin-bottom: var(--space-6);">
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Total Products</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700;" id="stat-products">0</div>
+        </div>
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Total Orders</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700;" id="stat-orders">0</div>
+        </div>
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Total Revenue</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--color-primary);" id="stat-revenue">₦0</div>
+        </div>
+        <div class="card" style="padding: var(--space-4);">
+          <div class="text-xs text-muted uppercase">Pending Payout</div>
+          <div style="font-size: var(--text-2xl); font-weight: 700;" id="stat-payout">₦0</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="pdp-tabs__nav" style="margin-bottom: var(--space-4); border-bottom: 1px solid var(--border-color);">
+        <button class="pdp-tabs__btn is-active" data-tab="products">My Products</button>
+        <button class="pdp-tabs__btn" data-tab="orders">Orders</button>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="tab-products" class="account-tab">
+        <div class="card" style="padding: var(--space-4); overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse;" id="products-table">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-color); text-align: left; font-size: var(--text-sm); color: var(--text-muted);">
+                <th style="padding: var(--space-3);">Product</th>
+                <th style="padding: var(--space-3);">Price</th>
+                <th style="padding: var(--space-3);">Stock</th>
+                <th style="padding: var(--space-3);">Status</th>
+                <th style="padding: var(--space-3);">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Orders Tab -->
+      <div id="tab-orders" class="account-tab" hidden>
+        <div id="orders-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Product Modal -->
+  <div class="modal-overlay" id="product-modal" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add New Product</h3>
+        <button id="close-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-product-form">
+          <div class="form-group">
+            <label class="form-label">Product Name</label>
+            <input type="text" id="np-name" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="np-category" class="form-select" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₦)</label>
+            <input type="number" id="np-price" class="form-input" required min="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock Quantity</label>
+            <input type="number" id="np-stock" class="form-input" required min="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="np-desc" class="form-textarea" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Submit for Approval</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/js/pages/seller-dashboard.js"></script>
+</body>
+</html>
