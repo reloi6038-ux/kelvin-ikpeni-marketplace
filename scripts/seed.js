@@ -6,9 +6,10 @@
  * Usage:
  *   node scripts/seed.js            # add missing records, keep existing
  *   node scripts/seed.js --fresh    # WIPE all data, then seed
- *   node scripts/seed.js --products # only seed products (assumes users/categories exist)
+ *   node scripts/seed.js --products # only seed products
  *
- * Demo prices are illustrative. Not verified market prices.
+ * After seeding, category product counts are synced so the
+ * homepage tiles show accurate numbers.
  */
 
 import 'dotenv/config';
@@ -78,7 +79,7 @@ const wipeAll = async () => {
 // ─────────────────────────────────────────────────────────────
 const seedCategories = async () => {
   logger.info('Seeding categories...');
-  const catMap = new Map(); // name → Category doc
+  const catMap = new Map();
 
   for (const cat of CATEGORIES) {
     let parent = await Category.findOne({ slug: slugify(cat.name) });
@@ -96,7 +97,6 @@ const seedCategories = async () => {
     }
     catMap.set(cat.name, parent);
 
-    // Subcategories
     if (cat.children) {
       for (const childName of cat.children) {
         const childSlug = slugify(childName);
@@ -123,8 +123,8 @@ const seedCategories = async () => {
 // ─────────────────────────────────────────────────────────────
 const seedUsers = async () => {
   logger.info('Seeding users...');
-  const userMap = new Map(); // email → User doc
-  const sellerMap = new Map(); // storeName → Seller doc
+  const userMap = new Map();
+  const sellerMap = new Map();
 
   for (const u of DEMO_USERS) {
     let user = await User.findOne({ email: u.email });
@@ -143,7 +143,6 @@ const seedUsers = async () => {
 
     userMap.set(u.email, user);
 
-    // Create Seller profile if this is a seller user
     if (u.store) {
       let seller = await Seller.findOne({ user: user._id });
       if (!seller) {
@@ -180,17 +179,15 @@ const seedProducts = async (categoryMap, sellerMap) => {
     const p = DEMO_PRODUCTS[i];
     const sku = skuFrom(p.name, i + 1);
 
-    // Skip if SKU already exists (idempotent)
     let existing = await Product.findOne({ sku });
     if (existing) {
       createdProducts.push(existing);
       continue;
     }
 
-    // Look up category (try specific child first, then parent)
     const categoryDoc =
       categoryMap.get(p.category) ||
-      categoryMap.get('Electronics') || // fallback
+      categoryMap.get('Electronics') ||
       null;
     if (!categoryDoc) {
       logger.warn(`  ! No category for: ${p.name} (${p.category})`);
@@ -224,7 +221,7 @@ const seedProducts = async (categoryMap, sellerMap) => {
         ? new Date(Date.now() + (p.flashHours || 48) * 60 * 60 * 1000)
         : undefined,
       rating: {
-        average: (Math.random() * 2 + 3).toFixed(1), // 3.0 – 5.0
+        average: (Math.random() * 2 + 3).toFixed(1),
         count: randomBetween(5, 250),
       },
       sold: randomBetween(0, 500),
@@ -235,14 +232,8 @@ const seedProducts = async (categoryMap, sellerMap) => {
 
     createdProducts.push(product);
 
-    // Increment seller's product count
     await Seller.findByIdAndUpdate(sellerDoc._id, {
       $inc: { 'stats.totalProducts': 1 },
-    });
-
-    // Increment category product count
-    await Category.findByIdAndUpdate(categoryDoc._id, {
-      $inc: { productCount: 1 },
     });
   }
 
@@ -270,7 +261,6 @@ const seedReviews = async (products, userMap) => {
   let created = 0;
 
   for (const product of products) {
-    // 3–8 reviews per product
     const reviewCount = randomBetween(3, 8);
     const usedUsers = new Set();
 
@@ -282,7 +272,6 @@ const seedReviews = async (products, userMap) => {
       const user = userMap.get(email);
       if (!user) continue;
 
-      // Idempotent: skip if this user already reviewed this product
       const exists = await Review.findOne({ product: product._id, user: user._id });
       if (exists) continue;
 
@@ -342,6 +331,42 @@ const seedCoupons = async (categoryMap, adminId) => {
 };
 
 // ─────────────────────────────────────────────────────────────
+// 6. Sync Category Product Counts
+// ─────────────────────────────────────────────────────────────
+const syncCategoryCounts = async () => {
+  logger.info('Syncing category product counts...');
+  const categories = await Category.find({});
+  let updated = 0;
+
+  for (const cat of categories) {
+    // Count products directly in this category
+    let count = await Product.countDocuments({
+      category: cat._id,
+      status: 'active',
+    });
+
+    // If it has children, add their product counts
+    const children = await Category.find({ parent: cat._id }).select('_id');
+    if (children.length > 0) {
+      const childIds = children.map((c) => c._id);
+      const childCount = await Product.countDocuments({
+        category: { $in: childIds },
+        status: 'active',
+      });
+      count += childCount;
+    }
+
+    if (cat.productCount !== count) {
+      cat.productCount = count;
+      await cat.save();
+      updated++;
+    }
+  }
+
+  logger.success(`Category counts synced (${updated} updated)`);
+};
+
+// ─────────────────────────────────────────────────────────────
 // MAIN
 // ─────────────────────────────────────────────────────────────
 const run = async () => {
@@ -362,6 +387,9 @@ const run = async () => {
       await seedReviews(products, userMap);
       await seedCoupons(categoryMap, userMap.get('admin@kelvinikpeni.com')?._id);
     }
+
+    // Sync category counts so homepage shows accurate item counts
+    await syncCategoryCounts();
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1);
     logger.success(`Seeding complete in ${elapsed}s`);

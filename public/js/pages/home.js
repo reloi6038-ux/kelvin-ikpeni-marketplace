@@ -52,7 +52,9 @@ const renderCategories = (categories) => {
             <span class="category-card__icon">${c.icon || '📦'}</span>
           </div>
           <span class="category-card__name">${c.name}</span>
-          <span class="category-card__count">${c.productCount || 0} items</span>
+          <span class="category-card__count">${
+            c.productCount > 0 ? `${c.productCount} items` : 'Browse items'
+          }</span>
         </a>
       `
     )
