@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /pages/checkout.html
+Disallow: /pages/payment-callback.html
+Disallow: /pages/account.html
+
+Sitemap: http://localhost:5000/sitemap.xml

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — Kelvin Ikpeni Marketplace</title>
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="container" style="min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: var(--space-10) 0;">
+    <div style="font-size: 6rem; font-weight: 800; color: var(--color-primary); line-height: 1; margin-bottom: var(--space-4);">404</div>
+    <h1 style="font-size: var(--text-2xl); margin-bottom: var(--space-2);">Oops! Page not found</h1>
+    <p class="text-secondary" style="max-width: 400px; margin-bottom: var(--space-6);">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <div style="display: flex; gap: var(--space-3); flex-wrap: wrap; justify-content: center;">
+      <a href="/" class="btn btn-primary">Go to Homepage</a>
+      <a href="/pages/products.html" class="btn btn-outline">Browse Products</a>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module">
+    import { mountHeader } from '/js/components/header.js';
+    import { mountFooter } from '/js/components/footer.js';
+    mountHeader();
+    mountFooter();
+  </script>
+</body>
+</html>
